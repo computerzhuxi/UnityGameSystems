@@ -1,0 +1,6 @@
+{
+  "name": "Computerzhuxi.Health.Core",
+  "rootNamespace": "Computerzhuxi.Health",
+  "references": [],
+  "noEngineReferences": true
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Computerzhuxi.Health.EditModeTests",
+  "references": [
+    "Computerzhuxi.Health.Core",
+    "Computerzhuxi.Health.Unity"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

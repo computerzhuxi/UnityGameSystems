@@ -1,0 +1,13 @@
+Library/
+Temp/
+Obj/
+Logs/
+UserSettings/
+Artifacts/
+.vs/
+*.csproj
+*.sln
+*.slnx
+*.log
+*.pidb
+*.pdb

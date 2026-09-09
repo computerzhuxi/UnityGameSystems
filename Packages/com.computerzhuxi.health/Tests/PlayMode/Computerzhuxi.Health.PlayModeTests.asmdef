@@ -1,0 +1,11 @@
+{
+  "name": "Computerzhuxi.Health.PlayModeTests",
+  "references": [
+    "Computerzhuxi.Health.Core",
+    "Computerzhuxi.Health.Unity"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "includePlatforms": []
+}
