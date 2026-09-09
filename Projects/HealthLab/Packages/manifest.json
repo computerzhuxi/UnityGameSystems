@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "com.computerzhuxi.health": "file:../../../Packages/com.computerzhuxi.health",
+    "com.unity.test-framework": "1.6.0",
+    "com.unity.modules.imgui": "1.0.0"
+  },
+  "testables": [
+    "com.computerzhuxi.health"
+  ]
+}

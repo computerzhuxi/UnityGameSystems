@@ -1,0 +1,7 @@
+{
+  "name": "Computerzhuxi.Health.Samples",
+  "references": [
+    "Computerzhuxi.Health.Core",
+    "Computerzhuxi.Health.Unity"
+  ]
+}
