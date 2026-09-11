@@ -1,13 +1,9 @@
 # Health 发布与安装
 
-health-v1.0.0 已发布到私有 computerzhuxi/UnityGameSystems，指向 ee41bb3538021c177dd30599107025a85aa658c2。通过 Git Credential Manager 完成认证和推送，实际 UPM 下载已经验证。
+当前发布 com.computerzhuxi.health@1.0.1，标签 health-v1.0.1，源码 `d05303f629393a41f93d3eba3a45e60dc4f177ca`，私有仓库 computerzhuxi/UnityGameSystems。
 
-Unity Package Manager 使用以下固定 URL：
+`https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.health#health-v1.0.1`
 
-`https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.health#health-v1.0.0`
-
-其他电脑和 CI 需要私有仓库读取权限。使用本机 Git 凭据管理或 CI 密钥管理，不把凭据放入 URL、manifest、包源码或日志。
-HealthLab 继续使用本地路径用于开发。ARPG 已锁定上述标签且只提交到本地，没有推送游戏仓库。
-
-后续发布必须更新包版本与 CHANGELOG，通过包和消费者验收后创建新标签；不要移动或覆盖 health-v1.0.0。main 的验收文档更新不会影响已发布版本。
-Tools/PublishHealth.ps1 是使用 GitHub CLI 登录的首版辅助入口；当前发布使用原生 Git 已完成，不需要重复运行或再次登录。
+已通过 Git Credential Manager 认证并验证真实 UPM 下载。其他电脑和 CI 需要私有仓库读取权限；不把凭据放入 URL、manifest、包或日志。
+HealthLab 保留本地引用，ARPG 锁定新标签且只本地提交，没有推送游戏仓库。原 health-v1.0.0 完整保留。
+后续发布更新版本和 CHANGELOG，通过验证后创建新标签，不移动已发布标签。Tools/PublishHealth.ps1 从 package.json 读取版本；它使用 GitHub CLI 登录，本次已通过原生 Git 完成，无需重复登录或发布。
