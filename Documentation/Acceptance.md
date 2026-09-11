@@ -1,4 +1,6 @@
-# Health 1.0.0 最终验收
+# Health 1.0.0 原验证记录（复核后由 1.0.1 修复）
+
+原测试结果属实，但复核发现序列化测试资源覆盖风险、满血初始化绕过配置校验及游戏属性标识边界问题，原“最终验收”结论撤回。修复与重新验收见 Review101.md。
 
 私有仓库 computerzhuxi/UnityGameSystems 已发布 health-v1.0.0，标签固定提交 ee41bb3538021c177dd30599107025a85aa658c2，不移动。
 Unity 6000.3.21f1；HealthLab 干净导入成功，EditMode 23/23、PlayMode 1/1；空项目导入 Sample 后 EditMode 23/23。

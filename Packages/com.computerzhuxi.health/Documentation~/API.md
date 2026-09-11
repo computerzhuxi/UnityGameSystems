@@ -22,3 +22,5 @@ HealthComponent Initialize 幂等，Awake 或首次访问时初始化；Inspecto
 UnityEvent 使用 Changed/Damaged/Healed/Died/Revived 对应时序；监听者通过 State 读取事实。
 
 1.x 保持公共契约及事件语义；破坏性改变升级主版本，发布标签不可移动。
+
+序列化初值要求 maximum ≥ 1，startingHealth ∈ [0, maximum]，即使启用满血启动也必须合法；满血开关只决定初始当前值。非法配置抛出 ArgumentOutOfRangeException，不创建核心或发布事件，修正后可再次初始化。

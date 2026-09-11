@@ -1,6 +1,6 @@
 {
   "name": "com.computerzhuxi.health",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Health System",
   "description": "Independent integer health core and Unity component.",
   "unity": "6000.3",

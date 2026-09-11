@@ -4,7 +4,8 @@ $systemsRoot=Split-Path -Parent $PSScriptRoot
 $githubCli='C:/Program Files/GitHub CLI/gh.exe'
 $repository='computerzhuxi/UnityGameSystems'
 $remoteUrl='https://github.com/computerzhuxi/UnityGameSystems.git'
-$releaseTag='health-v1.0.0'
+$package=Get-Content -LiteralPath (Join-Path $systemsRoot 'Packages/com.computerzhuxi.health/package.json') -Raw | ConvertFrom-Json
+$releaseTag="health-v$($package.version)"
 $login=& $githubCli api user --jq .login
 if($LASTEXITCODE -ne 0 -or $login -ne 'computerzhuxi'){throw '请先使用 gh auth login 登录 computerzhuxi。'}
 & $githubCli auth setup-git --hostname github.com
@@ -34,4 +35,4 @@ if($LASTEXITCODE -ne 0){throw '标签推送失败；不会移动或覆盖已有�
 $remoteTag=git -C $systemsRoot ls-remote origin "refs/tags/$releaseTag"
 if($LASTEXITCODE -ne 0 -or -not $remoteTag){throw '远程版本标签读取验证失败。'}
 Write-Output '私有仓库和版本已发布。请回到任务告知完成，以继续 ARPG 固定 Git 依赖切换与验证。'
-Write-Output 'https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.health#health-v1.0.0'
+Write-Output "https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.health#$releaseTag"

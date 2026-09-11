@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -30,6 +31,10 @@ namespace Computerzhuxi.Health
         public void Initialize()
         {
             if (health != null) return;
+            // 满血开关只决定初始状态，不允许隐藏非法的序列化配置。
+            if (maximum < 1) throw new ArgumentOutOfRangeException(nameof(maximum));
+            if (startingHealth < 0 || startingHealth > maximum)
+                throw new ArgumentOutOfRangeException(nameof(startingHealth));
             health = new Health(startWithFullHealth ? maximum : startingHealth, maximum);
             health.Changed += NotifyChanged;
             health.Damaged += NotifyDamaged;
