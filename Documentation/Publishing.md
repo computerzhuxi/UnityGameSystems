@@ -1,34 +1,13 @@
-# 手动发布 Health 1.0.0
+# Health 发布与安装
 
-发布目标仅为私有 `computerzhuxi/UnityGameSystems`，脚本不会推送 ARPG，也不会强制覆盖远程或标签。
+health-v1.0.0 已发布到私有 computerzhuxi/UnityGameSystems，指向 ee41bb3538021c177dd30599107025a85aa658c2。通过 Git Credential Manager 完成认证和推送，实际 UPM 下载已经验证。
 
-## 首次登录
-
-在本机 PowerShell 运行：
-
-```powershell
-& "C:/Program Files/GitHub CLI/gh.exe" auth login --hostname github.com --git-protocol https --web
-& "C:/Program Files/GitHub CLI/gh.exe" auth setup-git --hostname github.com
-& "C:/Program Files/GitHub CLI/gh.exe" api user --jq .login
-```
-
-网页中使用 computerzhuxi 账号授权，最后一条输出必须为 computerzhuxi。不要分享密码、令牌或验证码。
-
-## 创建私有仓库并推送
-
-检查 Tools/PublishHealth.ps1 后运行：
-
-```powershell
-& "D:/Unity/Project/UnityGameSystems/Tools/PublishHealth.ps1"
-```
-
-脚本验证账号、干净工作区、固定本地标签和仓库私有可见性，然后推送 main 与 health-v1.0.0。
-无需提前创建仓库；若仓库已存在，脚本先验证身份和私有可见性，普通 Git push 仍保护已有历史。
-
-## 发布后接入
-
-回到原任务告知发布完成。代理还须将 ARPG 本地依赖切换到以下 URL，刷新锁文件，验证隔离下载和全部最终回归：
+Unity Package Manager 使用以下固定 URL：
 
 `https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.health#health-v1.0.0`
 
-仅创建本地标签或完成本地测试不等于已验证远程 UPM 安装。私有包的其他开发机和 CI 同样需要读取权限。
+其他电脑和 CI 需要私有仓库读取权限。使用本机 Git 凭据管理或 CI 密钥管理，不把凭据放入 URL、manifest、包源码或日志。
+HealthLab 继续使用本地路径用于开发。ARPG 已锁定上述标签且只提交到本地，没有推送游戏仓库。
+
+后续发布必须更新包版本与 CHANGELOG，通过包和消费者验收后创建新标签；不要移动或覆盖 health-v1.0.0。main 的验收文档更新不会影响已发布版本。
+Tools/PublishHealth.ps1 是使用 GitHub CLI 登录的首版辅助入口；当前发布使用原生 Git 已完成，不需要重复运行或再次登录。
