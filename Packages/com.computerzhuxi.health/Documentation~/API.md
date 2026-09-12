@@ -1,5 +1,7 @@
 # API 与兼容契约
 
+> [返回文档入口](Index.md)。本页描述精确行为；第一次使用请先阅读 [Core 使用指南](CoreGuide.md)或 [Unity 组件指南](UnityGuide.md)。
+
 Core 唯一持有 Current、Maximum，IsAlive/IsDead/Normalized 均为派生数据。
 HealthSnapshot 与 HealthChange 是只读值类型。HealthChange 提供 Reason、Before、After、Delta、ActualAmount、HasChanged。
 
