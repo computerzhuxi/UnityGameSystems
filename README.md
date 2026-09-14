@@ -4,9 +4,10 @@
 
 ## 系统目录
 
-|系统|包名|稳定版本|职责|文档|
+|系统|包名|已发布版本|职责|文档|
 |---|---|---|---|---|
 |Health|com.computerzhuxi.health|1.0.1|当前生命、生命上限、伤害、治疗、死亡与复活|[快速入门](Packages/com.computerzhuxi.health/README.md)|
+|Perception 2D|com.computerzhuxi.perception2d|0.1.0|二维视觉、事件式听觉、分感官记忆与目标生命周期|[快速入门](Packages/com.computerzhuxi.perception2d/README.md)|
 
 新增系统时，应先建立独立包和测试宿主，再在本表登记。公共包不得引用某个具体游戏项目。
 
@@ -21,16 +22,19 @@
 
 ## 我应该读什么
 
-- 在游戏中使用 Health：[Health 快速入门](Packages/com.computerzhuxi.health/README.md)。
-- 修改 Health 源码：[开发流程](Documentation/DevelopmentWorkflow.md)和 [HealthLab 说明](Projects/HealthLab/README.md)。
+- 在游戏中使用系统：[Health 快速入门](Packages/com.computerzhuxi.health/README.md)或 [Perception 2D 快速入门](Packages/com.computerzhuxi.perception2d/README.md)。
+- 修改系统源码：[开发流程](Documentation/DevelopmentWorkflow.md)，并用 [HealthLab](Projects/HealthLab/README.md) 或 [Perception2DLab](Projects/Perception2DLab/README.md) 验证。
 - 建立新的可复用系统：[包规范](Documentation/PackageStandard.md)。
+- 把游戏内系统提取成可复用包：[系统提取手册](Documentation/SystemExtractionPlaybook.md)。
 - 发布新版本：[发布流程](Documentation/ReleaseWorkflow.md)。
 - 理解仓库组织方式：[仓库架构](Documentation/RepositoryArchitecture.md)。
+- 查看历史验收：[Health](Documentation/History/Health/README.md)或 [Perception 2D](Documentation/History/Perception2D/README.md)。
 
-## 快速验证 Health
+## 验证系统
 
-先关闭 HealthLab 编辑器，然后运行：
+先关闭对应 Lab 编辑器，再运行该系统的验证入口。Health 当前提供：
 
     ./Tools/ValidateHealth.ps1 -UnityEditor 'D:/Unity/Editor/6000.3.21f1/Editor/Unity.exe'
 
 测试 XML、Unity 日志、Windows 构建和程序冒烟标记统一写入被 Git 忽略的 Artifacts。
+新增系统应复用通用验证流程；在通用工具完成前，不得把一次性临时脚本当作长期入口。

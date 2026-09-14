@@ -10,7 +10,7 @@
 - 显式 World、目标代次身份、视觉与事件听觉、独立启停、分感官记忆、只读列表与单目标查询、综合位置、异常隔离的批次事件、调试 Gizmos。
 - `Projects/Perception2DLab` 本地引用包；独立 Sample 和 Windows 演示构建。
 - ARPG 已替换旧观察者，目标 GUID 保留；Actor 无感知依赖，通过窄适配提交朝向。Enemy 每帧过滤生命与阵营，优先可见目标，随后调查记忆。调查完成只登记已消费信息，保留包内记忆；听觉关闭。
-- [API 文档](../Packages/com.computerzhuxi.perception2d/Documentation~/API.md)、[行为契约](../Packages/com.computerzhuxi.perception2d/Documentation~/Contracts.md)、[接入与行为差异](Perception2DImplementation.md)。ARPG 侧另有 `Docs/Architecture/09-perception-architecture.md`。
+- [API 文档](../../../../Packages/com.computerzhuxi.perception2d/Documentation~/API.md)、[行为契约](../../../../Packages/com.computerzhuxi.perception2d/Documentation~/Contracts.md)、[接入与行为差异](Perception2DImplementation.md)。ARPG 侧另有 `Docs/Architecture/09-perception-architecture.md`。
 
 ## 最终验证
 
@@ -18,21 +18,21 @@ Unity 6000.3.21f1，Windows；所有 Editor 实例串行运行。
 
 | 项目 | 结果 | 原始证据 |
 | --- | --- | --- |
-| Lab EditMode | 18/18 通过 | [lab-final-editmode.xml](../Artifacts/Perception2D/lab-final-editmode.xml) |
-| Lab PlayMode | 3/3 通过 | [lab-final-playmode.xml](../Artifacts/Perception2D/lab-final-playmode.xml) |
-| ARPG EditMode | 171/171 通过 | [arpg-final-editmode-02.xml](../Artifacts/Perception2D/arpg-final-editmode-02.xml) |
-| ARPG PlayMode | 6/6 通过 | [arpg-final-playmode-03.xml](../Artifacts/Perception2D/arpg-final-playmode-03.xml) |
-| Lab Windows 构建 | 成功，退出码 0 | [构建日志](../Artifacts/Perception2D/lab-final-build.log) |
-| Lab 独立程序 | 视觉、听觉、关闭听觉验证通过，退出码 0 | [运行日志](../Artifacts/Perception2D/lab-player-smoke.log) |
-| ARPG Windows 构建 | 成功，退出码 0 | [构建日志](../Artifacts/Perception2D/arpg-final-build.log) |
-| 空项目 UPM Sample 导入 | 官方 Sample.Import 接口成功 | [导入日志](../Artifacts/Perception2D/sample-import.log) |
-| 导入后重新打开编译 | 成功，生成 Sample DLL；导入源码与包内样例逐字节一致 | [编译日志](../Artifacts/Perception2D/sample-compile.log) |
+| Lab EditMode | 18/18 通过 | `Artifacts/Perception2D/lab-final-editmode.xml` |
+| Lab PlayMode | 3/3 通过 | `Artifacts/Perception2D/lab-final-playmode.xml` |
+| ARPG EditMode | 171/171 通过 | `Artifacts/Perception2D/arpg-final-editmode-02.xml` |
+| ARPG PlayMode | 6/6 通过 | `Artifacts/Perception2D/arpg-final-playmode-03.xml` |
+| Lab Windows 构建 | 成功，退出码 0 | `Artifacts/Perception2D/lab-final-build.log` |
+| Lab 独立程序 | 视觉、听觉、关闭听觉验证通过，退出码 0 | `Artifacts/Perception2D/lab-player-smoke.log` |
+| ARPG Windows 构建 | 成功，退出码 0 | `Artifacts/Perception2D/arpg-final-build.log` |
+| 空项目 UPM Sample 导入 | 官方 Sample.Import 接口成功 | `Artifacts/Perception2D/sample-import.log` |
+| 导入后重新打开编译 | 成功，生成 Sample DLL；导入源码与包内样例逐字节一致 | `Artifacts/Perception2D/sample-compile.log` |
 
 Lab 首次从空 Library 完成导入和编译，首次测试中的注册断言失败及后续修正日志均保留。额外 Sample 项目也从无 Library 的最小项目开始，未依赖 ARPG 或 Lab 缓存。
 
 覆盖纯视觉、纯听觉、组合记录、分别过期、独立启停、无来源声音、多观察者和 World 隔离、40 个子 Collider 去重、遮挡与 Trigger、视角和发现/丢失距离、重入与异常隔离、暂停、销毁、对象池代次、恢复首批过期。ARPG 真实 SampleScene 覆盖绑定、追击→调查→返回、调查保留记忆、死亡销毁，以及感知版本不变时排除死亡目标。
 
-实际 DLL 元数据检查通过：[引用图](../Artifacts/Perception2D/dll-references.tsv)。包运行时只引用 UnityEngine.CoreModule、UnityEngine.Physics2DModule 和 netstandard；Actor 不引用感知包。11 个 ARPG 生产模块的引用图与无环检查保持通过。
+实际 DLL 元数据检查通过，本地证据为 `Artifacts/Perception2D/dll-references.tsv`。包运行时只引用 UnityEngine.CoreModule、UnityEngine.Physics2DModule 和 netstandard；Actor 不引用感知包。11 个 ARPG 生产模块的引用图与无环检查保持通过。
 
 构建产物：系统仓库 `Artifacts/Perception2D/Build/Perception2DLab.exe`，ARPG 仓库 `Artifacts/Perception2D/Build/ARPG.exe`。上述程序验证使用无图形模式；调试 Gizmos 与交互面板的人工视觉复核留给本次候选复核，不将自动化运行表述为人工试玩。
 
@@ -42,7 +42,7 @@ Lab 首次从空 Library 完成导入和编译，首次测试中的注册断言�
 
 原目标 GUID `a2b5e42013744c79a317b54c608d13ac` 当前唯一归属包内 Target 脚本，保留历史 MovedFrom 信息。Prefab 与 Scene 已通过真实资源加载。全量基线 Prefab/Scene 未发现旧感知字段 Override，因此本次没有需要转写的感知字段 Override；不将一次性迁移脚本声明为支持任意未来 Prefab Variant 的通用迁移工具。
 
-基线记录 885 个资产及 meta。最终相对基线仅 Enemy.prefab、SampleScene 改动，及六个已移除旧实现的 meta 离开原目录；Target meta 已随源码搬入包。无脚本 GUID 冲突，无脚本 meta 缺失。详见 [资产审计](../Artifacts/Perception2D/asset-audit.json)、[基线差异](../Artifacts/Perception2D/final-baseline-diff.json)。
+基线记录 885 个资产及 meta。最终相对基线仅 Enemy.prefab、SampleScene 改动，及六个已移除旧实现的 meta 离开原目录；Target meta 已随源码搬入包。无脚本 GUID 冲突，无脚本 meta 缺失。本地证据为 `Artifacts/Perception2D/asset-audit.json` 与 `Artifacts/Perception2D/final-baseline-diff.json`。
 
 Unity 测试/构建自动产生的字体缓存、URP 预过滤数据、运行时渲染配置、PlayerSettings 批处理字段及 TimeManager 序列化升级已备份并恢复到初始内容。未修改已有 Systems README 和 SystemExtractionPlaybook。保留迁移前备份 `arpg-pre-migration.zip` 和全部失败证据。
 

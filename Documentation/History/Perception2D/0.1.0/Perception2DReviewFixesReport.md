@@ -12,12 +12,12 @@
 
 | 检查 | 结果 | 证据 |
 | --- | --- | --- |
-| Lab EditMode | 20/20 | [lab-editmode.xml](../Artifacts/Perception2D/ReviewFixes/lab-editmode.xml) |
-| Lab PlayMode | 3/3 | [lab-playmode.xml](../Artifacts/Perception2D/ReviewFixes/lab-playmode.xml) |
-| ARPG EditMode | 169/169 | [arpg-editmode.xml](../Artifacts/Perception2D/ReviewFixes/arpg-editmode.xml) |
-| ARPG PlayMode | 6/6 | [arpg-playmode.xml](../Artifacts/Perception2D/ReviewFixes/arpg-playmode.xml) |
-| dotnet build ARPG.sln --no-restore -m:1 | 0 警告、0 错误，退出码 0 | [编译日志](../Artifacts/Perception2D/ReviewFixes/dotnet-build.log) |
-| 交互图源数据一致性 | 21/21 | [核对清单](../Artifacts/Perception2D/ReviewFixes/diagram-sync.json) |
+| Lab EditMode | 20/20 | `Artifacts/Perception2D/ReviewFixes/lab-editmode.xml` |
+| Lab PlayMode | 3/3 | `Artifacts/Perception2D/ReviewFixes/lab-playmode.xml` |
+| ARPG EditMode | 169/169 | `Artifacts/Perception2D/ReviewFixes/arpg-editmode.xml` |
+| ARPG PlayMode | 6/6 | `Artifacts/Perception2D/ReviewFixes/arpg-playmode.xml` |
+| dotnet build ARPG.sln --no-restore -m:1 | 0 警告、0 错误，退出码 0 | `Artifacts/Perception2D/ReviewFixes/dotnet-build.log` |
+| 交互图源数据一致性 | 21/21 | `Artifacts/Perception2D/ReviewFixes/diagram-sync.json` |
 
 Lab EditMode 从 18 增至 20，新增内部访问与 Gizmo 方向回归。ARPG EditMode 从 171 降至 169：删除两项依赖包内快照构造的测试，其关键行为断言并入 6 项 PlayMode 中的真实游戏链路。新 PlayMode 已验证死亡后排除、生命恢复且重新可见后追击、完成的信息不重复调查、重新可见的新刺激允许再次调查，以及整个过程中包记忆由公开查询读取。
 
