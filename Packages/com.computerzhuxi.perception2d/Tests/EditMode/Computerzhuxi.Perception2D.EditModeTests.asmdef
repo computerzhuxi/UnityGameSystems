@@ -1,0 +1,13 @@
+{
+  "name": "Computerzhuxi.Perception2D.EditModeTests",
+  "references": [
+    "Computerzhuxi.Perception2D"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "autoReferenced": false
+}

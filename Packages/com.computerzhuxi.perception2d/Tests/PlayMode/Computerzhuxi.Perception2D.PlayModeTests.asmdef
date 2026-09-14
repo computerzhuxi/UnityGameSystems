@@ -1,0 +1,11 @@
+{
+  "name": "Computerzhuxi.Perception2D.PlayModeTests",
+  "references": [
+    "Computerzhuxi.Perception2D"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "includePlatforms": [],
+  "autoReferenced": false
+}

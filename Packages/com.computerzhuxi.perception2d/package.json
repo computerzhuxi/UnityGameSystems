@@ -1,0 +1,17 @@
+{
+  "name": "com.computerzhuxi.perception2d",
+  "version": "0.1.0",
+  "displayName": "Perception 2D",
+  "description": "独立二维视觉、听觉与分感官记忆。",
+  "unity": "6000.3",
+  "dependencies": {
+    "com.unity.modules.physics2d": "1.0.0"
+  },
+  "samples": [
+    {
+      "displayName": "Basic Perception 2D",
+      "description": "视觉、声音与感官切换示例",
+      "path": "Samples~/BasicPerception2D"
+    }
+  ]
+}
