@@ -1,0 +1,11 @@
+{
+  "references": [
+    "Computerzhuxi.Navigation2D"
+  ],
+  "name": "Computerzhuxi.Navigation2D.PlayModeTests",
+  "includePlatforms": [],
+  "autoReferenced": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

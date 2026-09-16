@@ -1,0 +1,17 @@
+{
+  "description": "独立二维网格路径查询与 Physics2D 净空验证。",
+  "dependencies": {
+    "com.unity.modules.physics2d": "1.0.0"
+  },
+  "version": "0.1.0",
+  "samples": [
+    {
+      "description": "路径查询、跟随与动态障碍示例",
+      "displayName": "Basic Navigation 2D",
+      "path": "Samples~/BasicNavigation2D"
+    }
+  ],
+  "name": "com.computerzhuxi.navigation2d",
+  "displayName": "Navigation 2D",
+  "unity": "6000.3"
+}

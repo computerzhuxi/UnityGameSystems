@@ -1,0 +1,12 @@
+{
+  "testables": [
+    "com.computerzhuxi.navigation2d"
+  ],
+  "dependencies": {
+    "com.unity.modules.tilemap": "1.0.0",
+    "com.unity.modules.physics2d": "1.0.0",
+    "com.unity.modules.imgui": "1.0.0",
+    "com.unity.test-framework": "1.6.0",
+    "com.computerzhuxi.navigation2d": "file:../../../Packages/com.computerzhuxi.navigation2d"
+  }
+}

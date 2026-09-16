@@ -1,0 +1,13 @@
+{
+  "references": [
+    "Computerzhuxi.Navigation2D"
+  ],
+  "name": "Computerzhuxi.Navigation2D.EditModeTests",
+  "includePlatforms": [
+    "Editor"
+  ],
+  "autoReferenced": false,
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

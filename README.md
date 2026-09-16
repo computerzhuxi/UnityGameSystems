@@ -1,4 +1,4 @@
-# UnityGameSystems
+﻿# UnityGameSystems
 
 面向多个 Unity 项目的个人可复用游戏系统库。正式源码以 UPM 包保存；Projects 只提供开发、测试和示例宿主，不是包运行时的一部分。
 
@@ -8,6 +8,7 @@
 |---|---|---|---|---|
 |Health|com.computerzhuxi.health|1.0.1|当前生命、生命上限、伤害、治疗、死亡与复活|[快速入门](Packages/com.computerzhuxi.health/README.md)|
 |Perception 2D|com.computerzhuxi.perception2d|0.1.0|二维视觉、事件式听觉、分感官记忆与目标生命周期|[快速入门](Packages/com.computerzhuxi.perception2d/README.md)|
+|Navigation 2D|com.computerzhuxi.navigation2d|0.1.0|同层网格路径查询与 Physics2D 净空验证|[快速入门](Packages/com.computerzhuxi.navigation2d/README.md)|
 
 新增系统时，应先建立独立包和测试宿主，再在本表登记。公共包不得引用某个具体游戏项目。
 
@@ -38,3 +39,7 @@
 
 测试 XML、Unity 日志、Windows 构建和程序冒烟标记统一写入被 Git 忽略的 Artifacts。
 新增系统应复用通用验证流程；在通用工具完成前，不得把一次性临时脚本当作长期入口。
+
+## Navigation 2D
+
+- [Navigation 2D](Packages/com.computerzhuxi.navigation2d/README.md)：探索期版本 0.1.0，固定标签 `navigation2d-v0.1.0`；[Lab](Projects/Navigation2DLab/README.md)与[立项记录](Documentation/History/Navigation2D/README.md)。
