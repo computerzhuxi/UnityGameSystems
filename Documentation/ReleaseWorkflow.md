@@ -1,4 +1,4 @@
-# 包发布流程
+﻿# 包发布流程
 
 ## 版本规则
 
@@ -59,3 +59,11 @@ Tools/PublishHealth.ps1 从 package.json 读取 Health 版本。运行前应确�
 - 标签：perception2d-v0.1.0
 - 固定提交：ddeaa63e8f2e17d80a31ccb4eda1edf4477e8821
 - Git URL：https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.perception2d#perception2d-v0.1.0
+
+## 当前 Navigation2D 发布
+
+- 包：com.computerzhuxi.navigation2d@0.1.0
+- 标签：navigation2d-v0.1.0
+- 固定提交：8ebe60c54a7db122cd153c5ca26979bcbb4c2b57
+- Git URL：https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.navigation2d#navigation2d-v0.1.0
+- 验收：[发布记录](History/Navigation2D/0.1.0/ReleaseVerification.md)
