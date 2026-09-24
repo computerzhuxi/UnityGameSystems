@@ -42,4 +42,6 @@
 
 ## Navigation 2D
 
-- [Navigation 2D](Packages/com.computerzhuxi.navigation2d/README.md)：探索期版本 0.1.0，固定标签 `navigation2d-v0.1.0`；[Lab](Projects/Navigation2DLab/README.md)与[立项记录](Documentation/History/Navigation2D/README.md)。
+- [Navigation 2D](Packages/com.computerzhuxi.navigation2d/README.md)：探索期版本 0.2.0，固定标签 `navigation2d-v0.2.0`；[Lab](Projects/Navigation2DLab/README.md)与[历史记录](Documentation/History/Navigation2D/README.md)。
+
+0.2.0 包含 2D Agent、局部避让与 Inspector 导航。正式 Runtime 只负责路径、导航建议与避让计算；QuickStartExampleMover2D 仅在 Sample/Lab 演示消费建议，实际项目提供自己的运动组件。发布前的人工验收与独立复核见 [0.2.0 候选验收](Documentation/History/Navigation2D/0.2.0/QuickStartAcceptance.md)。已发布的 0.1.0 标签保持不变。

@@ -1,0 +1,6 @@
+{
+  "name": "Computerzhuxi.Navigation2D.AgentSample",
+  "references": [
+    "Computerzhuxi.Navigation2D"
+  ]
+}

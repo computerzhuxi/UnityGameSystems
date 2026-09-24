@@ -1,20 +1,50 @@
 # 架构与数据归属
 
+## 代码依赖
+
+实线箭头从使用者指向被使用者；虚线箭头表示实现接口。项目快照采集与运动执行不属于包。
+
 ```mermaid
 flowchart LR
-    Game[消费项目决策] --> Adapter[项目导航适配层]
-    Adapter --> Query[GridPathfinder2D]
+    Game[消费项目决策] --> Adapter[项目适配层]
+    Adapter --> Agent[可选 NavigationAgent2D]
+    Component[手动 Tick 便利组件] --> Agent
+    Navigator[自动 NavigationNavigator2D] --> Agent
+    Example[QuickStartExampleMover2D<br/>仅 Sample / Lab] --> Navigator
+    Agent --> Query[GridPathfinder2D]
+    Adapter --> Query
     Query --> Source[ITraversalSource2D]
-    Source --> Physics[PhysicsTraversalSource2D]
-    Adapter --> Movement[项目移动控制]
+    Agent --> Source
+    Physics[PhysicsTraversalSource2D] -.->|实现| Source
+    Adapter --> Avoidance[可选 AvoidanceWorld2D]
 ```
 
-包只拥有搜索工作区。输出列表、目标、路径进度、重算时钟与速度属于消费者；世界位置属于消费项目的运动系统。不存在包级单例、隐藏全局地图或第二份角色状态。
+## 运行时数据流
 
-一个 Runtime 程序集：算法通过 ITraversalSource2D 与 Physics2D 解耦，但公共坐标仍使用 Unity Vector2/Vector2Int，首版不额外引入纯 .NET 坐标模型。Runtime 不引用 Editor、测试、Sample、Lab 或游戏程序集。
+下图箭头表示本步数据的传递方向，不表示代码依赖。项目先收集全部对象的快照，再统一求解并执行。
 
-每次查询重新读取障碍事实。节点记录、字典、最小堆和重建列表复用；数据结构首次扩容可以分配，容量稳定后查询不应产生持续分配。路径列表由调用方管理容量。
+```mermaid
+flowchart LR
+    Agent[NavigationAgent2D] -->|期望移动方向| Snapshot[项目批量采集快照]
+    Movement[项目运动执行器] -->|实际位置与速度| Snapshot
+    Snapshot -->|位置、半径、实际与期望速度| Avoidance[AvoidanceWorld2D]
+    Avoidance -->|建议速度| Check[项目检查实际移动段]
+    Check -->|允许执行的速度| Movement
+```
 
-Sample 是最小可运行接入的权威演示源码；Lab 的 `Assets/Samples/BasicNavigation2D` 是受哈希校验的导入副本。修改 Sample 后必须同步并验证。Lab 自己的 Editor 工具与测试不随包运行时发布。
+直接查询路线：调用方拥有输出列表与跟随状态；Agent 路线：代理唯一拥有目的地、路径、索引、重算时钟与到达状态。两条路线可选，同一角色不能并行维护两份权威状态。世界位置、速度、AI、空间层级与执行器属于项目。
 
-多层地图通过消费者选择不同障碍来源解决。包不理解层级 ID 或楼梯；未来跨层编排可以把入口、出口和终点拆成多次请求，并由消费者提交状态变化。首版没有跨层链接 API。
+一个 Runtime 程序集，继续使用 Vector2/Vector2Int。Agent 是普通 C# 类，组件是可选入口；Inspector 诊断位于独立 Editor 程序集，运行时不引用它。没有无需求的泛型 Core、3D 代码、反向 ARPG/Editor/测试/Sample/Lab 引用或友元。
+
+每次查询重新读取障碍。搜索工作区和 Agent 路径缓冲复用；首轮容量扩容可分配，稳定后应零分配。只读视图创建一次。测量未显示必须改变原 A*，本轮通过代理请求节流减少不必要重算，不声称单次算法提速。
+
+Sample 唯一正式源码位于 Samples~/BasicNavigation2D、Samples~/AgentNavigation2D、Samples~/CrowdNavigation2D 与 Samples~/QuickStartNavigation2D，分别展示直接查询、单角色代理、可选群体求解及 Inspector 导航与示例适配；消费者不必选择全部能力。Lab 同名导入副本由验证入口检查完整文件集合与哈希。
+
+多层地图由消费者传入障碍源、有效性与版本。包不认识 World 或楼梯，层级提交与路线编排继续留在项目。3D 仅为未来方向。
+
+
+局部避让与路径查询独立，可单独使用。AvoidanceWorld2D 仅复用本步工作缓冲，不建立第二份世界状态。ORCA 数学子集改编自固定 RVO2-CS 提交，版权、完整许可与修改说明见 Third Party Notices.md；不导入第三方全局模拟器或第三方公开类型。
+
+战斗站位、攻击名额、跨层楼梯路线仍属于项目玩法。
+
+自动组件路线：NavigationNavigator2D 唯一持有一个 Agent，路径和进度由 Agent 拥有；正式 Runtime 没有移动执行器。QuickStartExampleMover2D 仅位于独立 Sample 程序集，用于演示消费建议；ARPG 不引入 Navigator 或示例适配器。快速组件不隐含批量避让。详见 [Inspector 指南](UnityGuide.md)。

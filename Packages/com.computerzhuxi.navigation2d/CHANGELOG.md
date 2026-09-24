@@ -1,5 +1,22 @@
 ﻿# Changelog
 
+## 0.2.0 — 2026-09-24
+
+- 新增 Inspector 自动导航 NavigationNavigator2D，提供实时配置、只读路径与停止/暂停命令；正式 Runtime 不执行移动。
+- 新增 Quick Start 真实场景与独立示例移动适配器、导航 Inspector 状态面板和组件/Prefab 回归；示例运动实现不属于正式 API。
+
+- 新增可选 NavigationAgent2D：唯一跟随状态、移动目标节流、失败重试、暂停、域失效和安全跳点。
+- 新增显式 Tick 的可选 Unity 组件、Agent Sample 与独立 Lab 场景。
+- 保留 FindPath 及原失败语义，不重写 A*、不增加 3D 依赖。
+- 新增公开代理、物理刚体、序列化与多角色分配测试；ARPG 薄适配迁移。
+
+### 0.2.0 追加：局部避让
+
+- 新增可选批量 AvoidanceWorld2D、稳定分组/身份、锁定身体、预算与不可行诊断；ORCA 许可注明来源。
+- 新增默认关闭的安全路径前视，支持与局部避让组合，不转移路径权威。
+- 新增 Crowd Sample/Lab；ARPG 使用项目协调器保留 Movement、World 与玩法边界。
+- 保持 0.1.0 历史标签不变。
+
 ## 0.1.0 — 2026-09-16
 
 - 独立 A* 查询、稳定优先级、复用搜索存储、四/八方向和展开预算。

@@ -1,0 +1,7 @@
+{
+  "name": "Computerzhuxi.Navigation2D.CrowdSample",
+  "references": [
+    "Computerzhuxi.Navigation2D"
+  ],
+  "autoReferenced": true
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Computerzhuxi.Navigation2D.Editor",
+  "references": [
+    "Computerzhuxi.Navigation2D"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "name": "NavigationCrowdLab.Tests",
+  "references": [
+    "Computerzhuxi.Navigation2D.CrowdSample",
+    "Computerzhuxi.Navigation2D"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ]
+}

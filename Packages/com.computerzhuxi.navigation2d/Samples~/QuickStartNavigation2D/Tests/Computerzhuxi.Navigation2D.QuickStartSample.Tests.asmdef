@@ -1,0 +1,21 @@
+{
+  "name": "Computerzhuxi.Navigation2D.QuickStartSample.Tests",
+  "references": [
+    "Computerzhuxi.Navigation2D",
+    "Computerzhuxi.Navigation2D.QuickStartSample"
+  ],
+  "optionalUnityReferences": [
+    "TestAssemblies"
+  ],
+  "autoReferenced": false,
+  "defineConstraints": [
+    "NAVIGATION_QUICKSTART_TESTS"
+  ],
+  "versionDefines": [
+    {
+      "name": "com.unity.test-framework",
+      "expression": "1.0.0",
+      "define": "NAVIGATION_QUICKSTART_TESTS"
+    }
+  ]
+}

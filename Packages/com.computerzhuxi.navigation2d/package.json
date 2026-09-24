@@ -1,14 +1,29 @@
 {
-  "description": "独立二维网格路径查询与 Physics2D 净空验证。",
+  "description": "二维路径查询、可选导航代理、批量局部避让与 Physics2D 净空验证。",
   "dependencies": {
     "com.unity.modules.physics2d": "1.0.0"
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "samples": [
     {
       "description": "路径查询、跟随与动态障碍示例",
       "displayName": "Basic Navigation 2D",
       "path": "Samples~/BasicNavigation2D"
+    },
+    {
+      "displayName": "Agent Navigation 2D",
+      "description": "可选代理、移动目标、暂停与动态障碍示例",
+      "path": "Samples~/AgentNavigation2D"
+    },
+    {
+      "displayName": "Crowd Navigation 2D",
+      "description": "可选批量避让、停止身体与窄道边界示例",
+      "path": "Samples~/CrowdNavigation2D"
+    },
+    {
+      "displayName": "Quick Start Navigation 2D",
+      "description": "Inspector 导航与仅供演示的项目移动适配器；正式 Runtime 不提供移动能力",
+      "path": "Samples~/QuickStartNavigation2D"
     }
   ],
   "name": "com.computerzhuxi.navigation2d",

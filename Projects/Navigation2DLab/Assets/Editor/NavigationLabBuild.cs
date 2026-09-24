@@ -22,6 +22,50 @@ public static class NavigationLabBuild
         }
         EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(path,true)};
     }
+    /// <summary>创建独立 Agent 场景；既有直接查询场景和用户编辑保持原样。</summary>
+    public static void PrepareAgent()
+    {
+        const string path = "Assets/NavigationAgentLab.unity";
+        if (!File.Exists(path))
+        {
+            var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            new GameObject("Navigation Agent Demo").AddComponent<AgentNavigationDemo>();
+            var camera = new GameObject("Camera").AddComponent<Camera>(); camera.transform.position = new(0, 0, -10);
+            camera.orthographic = true; camera.orthographicSize = 5; camera.backgroundColor = new(.08f, .09f, .12f);
+            camera.clearFlags = CameraClearFlags.SolidColor; EditorSceneManager.SaveScene(scene, path);
+        }
+    }
+    /// <summary>单独构建 Agent 使用路线，防止两个样例运动执行器混在同一场景。</summary>
+    public static void BuildAgent()
+    {
+        PrepareAgent();
+        string output = Path.GetFullPath("../../Artifacts/Logs/Navigation2D/Build/NavigationAgentLab.exe");
+        Directory.CreateDirectory(Path.GetDirectoryName(output));
+        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { "Assets/NavigationAgentLab.unity" }, locationPathName = output, target = BuildTarget.StandaloneWindows64, options = BuildOptions.Development });
+        if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Agent build failed");
+        Debug.Log("NAVIGATION_AGENT_BUILD_PASS");
+    }
+    /// <summary>首次创建独立群体场景，不覆盖已经存在的用户场景编辑。</summary>
+    public static void PrepareCrowd()
+    {
+        const string path = "Assets/NavigationCrowdLab.unity";
+        if (File.Exists(path)) return;
+        var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+        new GameObject("Navigation Crowd Demo").AddComponent<CrowdNavigationDemo>();
+        var camera = new GameObject("Camera").AddComponent<Camera>(); camera.transform.position = new(0, 0, -10);
+        camera.orthographic = true; camera.orthographicSize = 5; camera.backgroundColor = new(.08f, .09f, .12f);
+        camera.clearFlags = CameraClearFlags.SolidColor; EditorSceneManager.SaveScene(scene, path);
+    }
+    /// <summary>构建具有运行时可见圆形身体和操作按钮的群体验收程序。</summary>
+    public static void BuildCrowd()
+    {
+        PrepareCrowd();
+        string output = Path.GetFullPath("../../Artifacts/Logs/Navigation2D/Build/NavigationCrowdLab.exe");
+        Directory.CreateDirectory(Path.GetDirectoryName(output));
+        var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { "Assets/NavigationCrowdLab.unity" }, locationPathName = output, target = BuildTarget.StandaloneWindows64, options = BuildOptions.Development });
+        if (report.summary.result != BuildResult.Succeeded) throw new InvalidOperationException("Crowd build failed");
+        Debug.Log("NAVIGATION_CROWD_BUILD_PASS");
+    }
     /// <summary>构建场景并严格检查构建结果，产物放入被忽略的日志目录。</summary>
     public static void Build()
     {

@@ -1,0 +1,6 @@
+{
+  "name": "Computerzhuxi.Navigation2D.QuickStartSample",
+  "references": [
+    "Computerzhuxi.Navigation2D"
+  ]
+}
