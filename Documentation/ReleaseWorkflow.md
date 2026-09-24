@@ -62,6 +62,14 @@ Tools/PublishHealth.ps1 从 package.json 读取 Health 版本。运行前应确�
 
 ## 当前 Navigation2D 发布
 
+- 包：com.computerzhuxi.navigation2d@0.2.0
+- 标签：navigation2d-v0.2.0
+- 固定提交：2c5d452cf6cc801e3d9f4a9b1cd66dc8ae55cf49
+- Git URL：https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.navigation2d#navigation2d-v0.2.0
+- 验收：[发布记录](History/Navigation2D/0.2.0/ReleaseVerification.md)
+
+## 历史 Navigation2D 0.1.0 发布
+
 - 包：com.computerzhuxi.navigation2d@0.1.0
 - 标签：navigation2d-v0.1.0
 - 固定提交：8ebe60c54a7db122cd153c5ca26979bcbb4c2b57

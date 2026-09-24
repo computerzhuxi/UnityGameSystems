@@ -6,4 +6,5 @@
 
 - [0.2.0 Agent 阶段记录](0.2.0/CandidateAcceptance.md)：保留 Agent 阶段的候选证据与当时状态。
 - [0.2.0 避让阶段记录](0.2.0/AvoidanceAcceptance.md)：保留局部避让阶段的候选证据与当时状态。
-- [0.2.0 最终候选验收](0.2.0/QuickStartAcceptance.md)：当前 0.2.0 状态来源；正式 Runtime 仅导航，运动适配器仅在 Sample/Lab，用户人工验收与独立复核均已通过；记录的是发布前状态，历史 0.1.0 标签保持不变。
+- [0.2.0 最终候选验收](0.2.0/QuickStartAcceptance.md)：发布前的边界、自动测试、人工观察与独立复核快照。
+- [0.2.0 发布与远程标签验证](0.2.0/ReleaseVerification.md)：当前发布状态来源；远端固定标签、独立消费及 ARPG 接入复验。
