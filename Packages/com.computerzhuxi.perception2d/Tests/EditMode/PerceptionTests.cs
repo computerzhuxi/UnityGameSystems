@@ -12,6 +12,22 @@ namespace Computerzhuxi.Perception2D.Tests
     /// <summary>在独占临时对象上验证感官、记忆、身份与事件契约。</summary>
     public sealed class PerceptionTests
     {
+        private sealed class FixedSightScanner : PhysicsSightScanner2D
+        {
+            internal PerceptionTargetHandle Target;
+            internal int Calls;
+            internal float LastHearingRange;
+            /// <summary>返回指定完整帧，用于验证扫描器切换与来源结束。</summary>
+            public override void Scan(PhysicsScene2D scene, PerceptionTargetRegistry registry, PerceptionSettings2D settings,
+                Vector2 origin, Vector2 facing, Transform owner, IReadOnlyList<TargetPerceptionInfo> observations,
+                List<SightObservation2D> results)
+            {
+                Calls++;
+                LastHearingRange = settings.HearingRange;
+                results.Clear();
+                if (Target.Id != 0) results.Add(new SightObservation2D(Target, Vector2.right, origin));
+            }
+        }
         private readonly List<GameObject> objects = new();
         private PerceptionWorld2D world;
         /// <summary>创建与其他测试隔离的环境。</summary>
@@ -51,6 +67,161 @@ namespace Computerzhuxi.Perception2D.Tests
         {
             var go = ObjectAt("Observer", Vector2.zero); go.SetActive(false);
             var observer = go.AddComponent<PerceptionObserver2D>(); observer.Configure(world, settings ?? new PerceptionSettings2D()); go.SetActive(true); observer.SetFacingDirection(Vector2.right); return observer;
+        }
+        /// <summary>组件手动帧与普通 C# 核心在相同输入和时间下得到相同感知事实。</summary>
+        [Test] public void ManualComponentAndCore_ShareIdenticalStateRules()
+        {
+            var target = Target(Vector2.right);
+            var observer = Observer();
+            observer.SetAutomaticSight(false);
+            var plain = new PerceptionCore2D(world.Registry);
+            var componentEvents = new List<PerceptionChangeReason>();
+            var coreEvents = new List<PerceptionChangeReason>();
+            observer.SenseUpdated += change => componentEvents.Add(change.Reason);
+            plain.SenseUpdated += change => coreEvents.Add(change.Reason);
+            var frame = new[] { new SightObservation2D(target.Handle, Vector2.right, Vector2.zero) };
+            observer.SubmitSightFrame(frame, 1);
+            plain.SubmitSightFrame(frame, 1);
+            observer.Advance(0, 1);
+            plain.Advance(1);
+            Assert.That(observer.Observations.Count, Is.EqualTo(plain.Observations.Count));
+            Assert.That(observer.Observations[0].Sight.Value.Position, Is.EqualTo(plain.Observations[0].Sight.Value.Position));
+            Assert.That(observer.Observations[0].IsVisible, Is.EqualTo(plain.Observations[0].IsVisible));
+
+            observer.SubmitSightFrame(Array.Empty<SightObservation2D>(), 2);
+            plain.SubmitSightFrame(Array.Empty<SightObservation2D>(), 2);
+            observer.Advance(0, 2);
+            plain.Advance(2);
+            Assert.That(observer.Observations[0].IsVisible, Is.False);
+            Assert.That(observer.Observations[0].Sight.Value.Time, Is.EqualTo(plain.Observations[0].Sight.Value.Time));
+
+            observer.Core.ReportHearing(Vector2.up, Vector2.zero, 3, source: target.Handle);
+            plain.ReportHearing(Vector2.up, Vector2.zero, 3, source: target.Handle);
+            observer.Advance(0, 3);
+            plain.Advance(3);
+            Assert.That(observer.Observations[0].Hearing.Value.Position, Is.EqualTo(plain.Observations[0].Hearing.Value.Position));
+            observer.Advance(0, 8);
+            plain.Advance(8);
+            Assert.That(observer.Observations[0].Hearing.HasValue, Is.False);
+            CollectionAssert.AreEqual(coreEvents, componentEvents);
+        }
+
+        /// <summary>手动帧仅在手动模式接受，替换扫描器结束旧来源并使用新完整帧。</summary>
+        [Test] public void SightModeAndScannerReplacement_IsolateSources()
+        {
+            var target = Target(Vector2.right);
+            var observer = Observer();
+            Assert.Throws<InvalidOperationException>(() => observer.SubmitSightFrame(
+                new[] { new SightObservation2D(target.Handle, Vector2.right, Vector2.zero) }, 1));
+            var first = new FixedSightScanner { Target = target.Handle };
+            observer.SetSightScanner(first);
+            observer.Advance(0, 1);
+            Assert.That(first.Calls, Is.EqualTo(1));
+            Assert.That(observer.TryGetObservation(target, out var info) && info.IsVisible, Is.True);
+            int switched = 0;
+            observer.SenseUpdated += change => { if (change.Reason == PerceptionChangeReason.SourceChanged) switched++; };
+            var empty = new FixedSightScanner();
+            observer.SetSightScanner(empty);
+            observer.Advance(0, 2);
+            Assert.That(empty.Calls, Is.EqualTo(1));
+            Assert.That(switched, Is.EqualTo(1));
+            Assert.That(observer.TryGetObservation(target, out info) && info.IsVisible, Is.False);
+            observer.SetAutomaticSight(false);
+            observer.SubmitSightFrame(new[] { new SightObservation2D(target.Handle, Vector2.right, Vector2.zero) }, 3);
+            observer.Advance(0, 3);
+            Assert.That(observer.TryGetObservation(target, out info) && info.IsVisible, Is.True);
+        }
+
+        /// <summary>大扫描间隔下重新启用视觉仍立即采样，并使用发现距离。</summary>
+        [Test] public void SightReenable_ImmediatelyScansAtDiscoveryDistance()
+        {
+            var observer = Observer(new PerceptionSettings2D { ScanInterval = 10 });
+            var target = Target(Vector2.right * 2);
+            observer.Advance(0, 1);
+            observer.SetSenseEnabled(PerceptionSense.Sight, false);
+            observer.Advance(0, 2);
+            target.transform.position = Vector2.right * 7;
+            Physics2D.SyncTransforms();
+            observer.SetSenseEnabled(PerceptionSense.Sight, true);
+            observer.Advance(0, 3);
+            Assert.That(observer.TryGetObservation(target, out var info) && info.IsVisible, Is.False);
+            target.transform.position = Vector2.right * 2;
+            Physics2D.SyncTransforms();
+            observer.SetSenseEnabled(PerceptionSense.Sight, false);
+            observer.Advance(0, 4);
+            observer.SetSenseEnabled(PerceptionSense.Sight, true);
+            observer.Advance(0, 5);
+            Assert.That(observer.TryGetObservation(target, out info) && info.IsVisible, Is.True);
+        }
+
+        /// <summary>大扫描间隔下重置先提交，再于下一批立即重新发现。</summary>
+        [Test] public void Reset_RescansOnNextBatchWithLongInterval()
+        {
+            var observer = Observer(new PerceptionSettings2D { ScanInterval = 10 });
+            var target = Target(Vector2.right * 2);
+            observer.Advance(0, 1);
+            observer.ResetForReuse();
+            observer.Advance(0, 2);
+            Assert.That(observer.Observations, Is.Empty);
+            observer.Advance(0, 2.1);
+            Assert.That(observer.TryGetObservation(target, out var info) && info.IsVisible, Is.True);
+        }
+
+        /// <summary>替换或销毁组件后，外部保留的旧核心不能继续转发组件通知。</summary>
+        [Test] public void ReplacedAndDestroyedCores_DoNotForwardObserverEvents()
+        {
+            var observer = Observer(new PerceptionSettings2D { SightEnabled = false });
+            PerceptionTarget2D target = Target(Vector2.right);
+            int notifications = 0;
+            observer.SenseUpdated += _ => notifications++;
+            PerceptionCore2D old = observer.Core;
+            var next = ObjectAt("NextWorld", Vector2.zero).AddComponent<PerceptionWorld2D>();
+            observer.Bind(next);
+            old.ReportHearing(Vector2.right, Vector2.zero, 1, source: target.Handle);
+            old.Advance(1);
+            Assert.That(notifications, Is.Zero);
+
+            observer.enabled = false;
+            PerceptionCore2D configuredOld = observer.Core;
+            observer.Configure(next, new PerceptionSettings2D { SightEnabled = false });
+            configuredOld.ReportHearing(Vector2.zero, Vector2.zero, 2);
+            configuredOld.Advance(2);
+            Assert.That(notifications, Is.Zero);
+
+            PerceptionCore2D destroyedCore = observer.Core;
+            UnityEngine.Object.DestroyImmediate(observer.gameObject);
+            destroyedCore.ReportHearing(Vector2.zero, Vector2.zero, 3);
+            destroyedCore.Advance(3);
+            Assert.That(notifications, Is.Zero);
+        }
+
+        /// <summary>运行时更新配置保留核心、感官开关与现有记忆。</summary>
+        [Test] public void RuntimeSettings_KeepCoreAndMemory()
+        {
+            var observer = Observer(new PerceptionSettings2D { SightEnabled = false });
+            var target = Target(Vector2.right);
+            observer.Core.ReportHearing(Vector2.up, Vector2.zero, 1, source: target.Handle);
+            observer.Advance(0, 1);
+            PerceptionCore2D original = observer.Core;
+            observer.UpdateSettings(new PerceptionSettings2D { SightEnabled = false, HearingRange = 20 });
+            observer.Advance(0, 2);
+            Assert.That(observer.Core, Is.SameAs(original));
+            Assert.That(observer.TryGetObservation(target, out var info), Is.True);
+            Assert.That(info.Hearing.Value.Position, Is.EqualTo(Vector2.up));
+            Assert.That(observer.Core.Settings.HearingRange, Is.EqualTo(20));
+        }
+        /// <summary>同批重置取消待提交配置时，组件扫描配置仍与核心保持一致。</summary>
+        [Test] public void Reset_CancelsPendingComponentSettings()
+        {
+            var observer = Observer();
+            var scanner = new FixedSightScanner();
+            observer.SetSightScanner(scanner);
+            observer.UpdateSettings(new PerceptionSettings2D { HearingRange = 20 });
+            observer.ResetForReuse();
+            observer.Advance(0, 1);
+            observer.Advance(0, 2);
+            Assert.That(observer.Core.Settings.HearingRange, Is.EqualTo(10));
+            Assert.That(scanner.LastHearingRange, Is.EqualTo(10));
         }
         /// <summary>密集子碰撞体不能截断结果，也不能重复目标。</summary>
         [Test] public void DenseColliders_AreCompleteAndNormalized()

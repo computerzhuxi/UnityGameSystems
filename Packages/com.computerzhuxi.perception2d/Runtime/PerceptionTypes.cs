@@ -4,7 +4,25 @@ using UnityEngine;
 namespace Computerzhuxi.Perception2D
 {
     public enum PerceptionSense { Sight, Hearing }
-    public enum PerceptionChangeReason { Acquired, Lost, Heard, SenseDisabled, Expired, Cleared, TargetInvalidated }
+    public enum PerceptionChangeReason { Acquired, Lost, Heard, SenseDisabled, Expired, Cleared, TargetInvalidated, SourceChanged }
+
+    /// <summary>一次完整视觉帧中的目标事实，由调用方提供检测点和观察位置。</summary>
+    public readonly struct SightObservation2D
+    {
+        public PerceptionTargetHandle Handle { get; }
+        public Vector2 Position { get; }
+        public Vector2 ReceiverPosition { get; }
+
+        /// <summary>建立已经确认可见的目标输入。</summary>
+        public SightObservation2D(PerceptionTargetHandle handle, Vector2 position, Vector2 receiverPosition)
+        {
+            Guard.Vector(position);
+            Guard.Vector(receiverPosition);
+            Handle = handle;
+            Position = position;
+            ReceiverPosition = receiverPosition;
+        }
+    }
 
     /// <summary>保存一次成功感知的不可变事实；位置不会跟随目标实时变化。</summary>
     public readonly struct PerceptionStimulus
@@ -26,15 +44,20 @@ namespace Computerzhuxi.Perception2D
     /// <summary>一个目标在一个注册生命周期中的各感官只读记录。</summary>
     public readonly struct TargetPerceptionInfo
     {
-        public PerceptionTarget2D Target { get; }
-        public ulong Generation { get; }
+        public PerceptionTargetHandle Handle { get; }
+        public object AssociatedObject { get; }
+        public PerceptionTarget2D Target => AssociatedObject as PerceptionTarget2D;
+        public ulong Generation => Handle.Generation;
         public PerceptionStimulus? Sight { get; }
         public PerceptionStimulus? Hearing { get; }
         public bool IsVisible => Sight.HasValue && Sight.Value.IsCurrent;
         public Transform TargetRoot => Target != null ? Target.TargetRoot : null;
         /// <summary>生成目标当前状态快照，不向调用方暴露可变轨迹。</summary>
+        internal TargetPerceptionInfo(PerceptionTargetHandle handle, object associatedObject, PerceptionStimulus? sight, PerceptionStimulus? hearing)
+        { Handle = handle; AssociatedObject = associatedObject; Sight = sight; Hearing = hearing; }
+        /// <summary>兼容已有包测试对不可变位置策略的直接构造。</summary>
         internal TargetPerceptionInfo(PerceptionTarget2D target, ulong generation, PerceptionStimulus? sight, PerceptionStimulus? hearing)
-        { Target = target; Generation = generation; Sight = sight; Hearing = hearing; }
+        { Handle = default; AssociatedObject = target; Sight = sight; Hearing = hearing; }
         /// <summary>优先当前视觉，否则采用最新记录，同时间采用主导感官。</summary>
         public bool TryGetKnownPosition(PerceptionSense dominant, out PerceptionStimulus result)
         {
@@ -60,15 +83,17 @@ namespace Computerzhuxi.Perception2D
     /// <summary>感官变化通知携带原因、旧生命周期及最后记录。</summary>
     public readonly struct PerceptionChange
     {
-        public PerceptionTarget2D Target { get; }
-        public ulong Generation { get; }
+        public PerceptionTargetHandle Handle { get; }
+        public object AssociatedObject { get; }
+        public PerceptionTarget2D Target => AssociatedObject as PerceptionTarget2D;
+        public ulong Generation => Handle.Generation;
         public ulong EventId { get; }
         public PerceptionSense Sense { get; }
         public PerceptionChangeReason Reason { get; }
         public PerceptionStimulus Stimulus { get; }
         /// <summary>创建已提交状态对应的通知。</summary>
-        internal PerceptionChange(PerceptionTarget2D target, ulong generation, PerceptionSense sense, PerceptionChangeReason reason, PerceptionStimulus stimulus, ulong eventId = 0)
-        { Target = target; Generation = generation; Sense = sense; Reason = reason; Stimulus = stimulus; EventId = eventId; }
+        internal PerceptionChange(PerceptionTargetHandle handle, object associatedObject, PerceptionSense sense, PerceptionChangeReason reason, PerceptionStimulus stimulus, ulong eventId = 0)
+        { Handle = handle; AssociatedObject = associatedObject; Sense = sense; Reason = reason; Stimulus = stimulus; EventId = eventId; }
     }
 
     /// <summary>游戏提交的声音描述，与音频播放系统无依赖。</summary>
@@ -106,7 +131,7 @@ namespace Computerzhuxi.Perception2D
         [Min(0.01f)] public float AnonymousMemory = 5;
         public PerceptionSense DominantSense = PerceptionSense.Sight;
         /// <summary>拒绝非法配置而非静默修正，保持编辑器与运行时契约一致。</summary>
-        internal PerceptionSettings2D CopyValidated()
+        public PerceptionSettings2D CopyValidated()
         {
             Guard.NonNegative(SightDistance, nameof(SightDistance)); Guard.NonNegative(LoseSightDistance, nameof(LoseSightDistance));
             Guard.NonNegative(ViewAngle, nameof(ViewAngle)); Guard.NonNegative(ScanInterval, nameof(ScanInterval));
@@ -125,5 +150,7 @@ namespace Computerzhuxi.Perception2D
         internal static void Sense(PerceptionSense sense) { if (sense != PerceptionSense.Sight && sense != PerceptionSense.Hearing) throw new ArgumentOutOfRangeException(nameof(sense)); }
         /// <summary>验证世界空间向量所有分量有限。</summary>
         internal static void Vector(Vector2 value) { if (float.IsNaN(value.x) || float.IsNaN(value.y) || float.IsInfinity(value.x) || float.IsInfinity(value.y)) throw new ArgumentException("向量必须有限。"); }
+        /// <summary>验证时间轴上的有限时刻。</summary>
+        internal static void Time(double value, string name) { if (double.IsNaN(value) || double.IsInfinity(value)) throw new ArgumentOutOfRangeException(name); }
     }
 }

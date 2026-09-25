@@ -13,11 +13,13 @@ namespace Computerzhuxi.Perception2D
         [SerializeField] private Transform targetRoot;
         [SerializeField] private Transform sightPoint;
         [SerializeField] private bool sightDetectable = true;
+        private ulong lastGeneration;
         public Transform TargetRoot => targetRoot != null ? targetRoot : transform;
         public Vector2 SightPosition => sightPoint != null ? (Vector2)sightPoint.position : (Vector2)TargetRoot.position;
         public PerceptionWorld2D World => world;
-        public ulong Generation { get; private set; }
-        public bool IsRegistered { get; private set; }
+        public PerceptionTargetHandle Handle { get; private set; }
+        public ulong Generation => lastGeneration;
+        public bool IsRegistered => world != null && Handle.Id != 0 && world.Registry.IsValid(Handle);
         public bool SightDetectable { get => sightDetectable; set => sightDetectable = value; }
         /// <summary>显式绑定感知环境；更换环境结束原注册生命周期。</summary>
         public void Bind(PerceptionWorld2D value)
@@ -34,14 +36,18 @@ namespace Computerzhuxi.Perception2D
         private void Register()
         {
             if (world == null || IsRegistered) return;
-            Generation = checked(Generation + 1); IsRegistered = true; world.RegisterTarget(this);
+            Handle = world.Registry.Register(this);
+            lastGeneration = Handle.Generation;
+            world.RegisterTarget(this);
         }
         /// <summary>注销当前目标并使所有关联记忆失效。</summary>
         private void Unregister()
         {
             if (!IsRegistered) return;
-            IsRegistered = false;
-            if (world != null) world.UnregisterTarget(this, Generation);
+            PerceptionTargetHandle oldHandle = Handle;
+            world.Registry.Unregister(oldHandle);
+            world.UnregisterTarget(this, oldHandle);
+            Handle = default;
         }
     }
 }
