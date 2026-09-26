@@ -73,4 +73,4 @@ observer.SetAutomaticSight(true);
 - 旧组件的 `world`、观察点、配置、朝向和 Gizmo 序列化字段保持不变；常用组件查询和事件继续可用。
 - `PerceptionObserver2D.Bind` 到新 World 仍清理旧环境状态。运行中修改参数改用 `UpdateSettings`；停用时的 `Configure` 仍会重建核心。
 - 新的非组件集成直接使用 `PerceptionTargetRegistry`、`PerceptionCore2D`、完整视觉帧和 `Advance`；不要依赖旧内部 `PerceptionSession2D`。
-- 0.1.0 固定 Git 标签不含这些 API；当前 0.2.0 是本地未发布候选。ARPG 当前固定引用候选提交 `2d02ccae31639ee669ae1568da0000fada8449f8`，是历史核对事实，不代表候选已经发布；其他消费项目应按各自 manifest 核实引用。
+- 0.1.0 固定 Git 标签不含这些 API；当前 0.2.0 是本地未发布候选。消费项目应按各自 manifest 核实引用。

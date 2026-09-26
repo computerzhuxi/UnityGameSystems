@@ -2,7 +2,7 @@
 
 Unity 6000.3 的二维视觉、听觉与分感官记忆包。包负责目标身份、已确认感知事实、记忆和通知；阵营、威胁评分、AI 决策、导航及音频播放由游戏负责。组件入口与编程式入口共享 `PerceptionCore2D` 状态规则。
 
-当前仓库源码是 **0.2.0 未发布候选**。已发布标签 `perception2d-v0.1.0` 仍是旧 API；不要把安装该标签当成安装本候选。开发时让 Unity Package Manager 通过本地路径引用 `Packages/com.computerzhuxi.perception2d`。待正式发布后再使用相应发布标签。ARPG 当前固定引用 `2d02ccae31639ee669ae1568da0000fada8449f8`，这是候选源码的历史核对信息，不代表正式发布或本轮升级。
+当前仓库源码是 **0.2.0 未发布候选**。已发布标签 `perception2d-v0.1.0` 仍是旧 API；不要把安装该标签当成安装本候选。开发时让 Unity Package Manager 通过本地路径引用 `Packages/com.computerzhuxi.perception2d`。待正式发布后再使用相应发布标签。
 
 ## 安装
 

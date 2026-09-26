@@ -1,5 +1,7 @@
 # HealthComponent 使用指南
 
+> 第一次使用请先阅读 [上手指南](GettingStarted.md)。本页进一步说明组件配置与 UnityEvent 接入。
+
 ## 添加组件
 
 1. 给目标 GameObject 添加 HealthComponent。

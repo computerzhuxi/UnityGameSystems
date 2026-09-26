@@ -1,5 +1,7 @@
 # 中型项目集成指南
 
+> 第一次使用请先阅读 [上手指南](GettingStarted.md)。本页讨论已有角色架构的适配层职责。
+
 ## 两种接入方式
 
 没有既有角色架构时，直接使用 HealthComponent。已有 Combat、Actor、Progression 和 UI 模块时，建议建立项目自己的适配层并直接组合 Health Core。

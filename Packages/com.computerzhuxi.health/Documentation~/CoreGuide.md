@@ -1,5 +1,7 @@
 # Health Core 使用指南
 
+> 第一次使用请先阅读 [上手指南](GettingStarted.md)。本页进一步说明直接组合 Core 的常用命令与事件。
+
 ## 创建
 
     Health health = new Health(current: 10, maximum: 10);
