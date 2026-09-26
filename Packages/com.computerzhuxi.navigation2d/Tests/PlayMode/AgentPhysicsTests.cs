@@ -49,6 +49,30 @@ public sealed class AgentPhysicsTests
         component.enabled = true; Assert.That(component.Agent.HasPath, Is.False);
         component.Tick(Vector2.zero, .02f); Assert.That(component.Agent.QueryCount, Is.EqualTo(count + 1));
     }
+    /// <summary>手动组件切换独立物理场景时保留任务，并立即丢弃旧场景路径与查询源。</summary>
+    [UnityTest] public IEnumerator Component_PhysicsSceneMigration_RetainsTaskAndQueriesNewScene()
+    {
+        var go = Create("Migrating component"); var component = go.AddComponent<NavigationAgent2DComponent>();
+        component.ConfigurePhysics(1 << 8); var agent = component.Agent;
+        agent.SetDestination(Vector2.right * 2); component.Tick(Vector2.zero, .02f);
+        Assert.That(agent.HasPath);
+        int queries = agent.QueryCount;
+        Scene other = SceneManager.CreateScene("AgentPhysicsDomain-" + Guid.NewGuid(), new CreateSceneParameters(LocalPhysicsMode.Physics2D));
+        try
+        {
+            SceneManager.MoveGameObjectToScene(go, other);
+            var obstacle = new GameObject("New scene obstacle"); SceneManager.MoveGameObjectToScene(obstacle, other);
+            obstacle.layer = 8; obstacle.AddComponent<BoxCollider2D>().size = Vector2.one;
+            Physics2D.SyncTransforms(); other.GetPhysicsScene2D().Simulate(.02f);
+            component.Tick(Vector2.zero, .02f);
+            Assert.That(component.Agent, Is.SameAs(agent)); Assert.That(agent.HasDestination);
+            Assert.That(agent.QueryCount, Is.EqualTo(queries + 1));
+            Assert.That(agent.HasPath, Is.False);
+            Assert.That(agent.LastResult.Value.Status, Is.EqualTo(PathStatus.StartBlocked));
+        }
+        finally { SceneManager.UnloadSceneAsync(other); }
+        yield return null;
+    }
     /// <summary>实际刚体连续消费移动建议与目标更新时保持前进，不因重算产生方向反转。</summary>
     [UnityTest] public IEnumerator MovingTarget_RigidbodyDoesNotReverse()
     {

@@ -4,18 +4,18 @@
 
 `NavigationNavigator2D` 自动读取真实位置并更新路径，只提供只读结果和方向建议，永不写 Transform、Rigidbody2D 位置或速度。正式 Runtime 没有运动组件。实际项目必须由自己的移动系统消费建议；已有状态机也可直接组合查询、NavigationAgent2D 与 AvoidanceWorld2D。
 
-旧 `NavigationAgent2DComponent` 保留手动 Tick 契约。不要在同一角色上同时维护两种导航状态拥有者。ARPG 继续底层 API + EnemyNavigation / CharacterMovement2D，不引入 Navigator 或任何示例运动器。
+旧 `NavigationAgent2DComponent` 保留手动 Tick 契约。不要在同一角色上同时挂载并驱动两种组件：它们各自拥有一个任务。已有空间域适配或自定义运动器也可直接使用公开 Agent、查询与避让 API。两条最小接入路径见 [Getting Started](GettingStarted.md)。
 
 ## Inspector 配置，无需修改导航源码
 
 1. 给角色添加 **Navigation Navigator 2D**。
-2. 把身体 Collider2D 拖入 Body Collider；不指定身体时使用 Radius，只查询路径也可以。身体必须启用且不是 Trigger。
+2. 把身体 Collider2D 拖入 Body Collider；不指定身体时使用 Radius，只查询路径也可以。身体必须启用且不是 Trigger。子物体上有独立 Rigidbody2D 的身体也可以使用，导航圆心跟随该刚体的真实物理位置。
 3. 给地图障碍设置独立 Layer，选入 Obstacle Mask；身体自身层不要选入。
 4. 把目标 Transform 拖入 Target。目标不能占住所选障碍域中的终点。
 5. 运行并查看 Inspector 状态、最后查询结果、净空半径和剩余路径点；Scene 视图开启 Gizmos。**角色此时不会自动移动**，这是导航职责边界。
 6. 让项目移动系统读取下述只读建议，完成移动；如果只想看演示，导入 QuickStart 示例场景。
 
-导航不要求某一种刚体类型，也不擅自设置 Kinematic、速度或约束。身体存在时读取实际物理位置，避免插值显示位置影响路径进度。
+导航不要求某一种刚体类型，也不擅自设置 Kinematic、速度或约束。身体有附属 Rigidbody2D 时读取其物理位置；无附属刚体时以 Navigator 所在物体的 Transform 为圆心。路径进度、保守净空圆及选中 Gizmo 使用同一导航圆心，避免子刚体移动而父物体静止时跟错位置。
 
 ## Inspector 参数与实时生效规则
 
@@ -35,7 +35,7 @@
 | Look Ahead Distance | 通过既有 Agent 实现安全路径前视 |
 | Draw Path | 绘制剩余路径及净空 |
 
-居中圆使用缩放后的实际半径；矩形、偏移等身体使用保守包围圆，可能拒绝狭窄通道。尺寸变化会触发重新规划。
+居中圆使用该身体 Transform 缩放后的实际半径；矩形、偏移等身体根据相对身体锚点的世界包围范围使用保守包围圆，可能拒绝狭窄通道。固定偏移且没有独立子刚体的身体仍以 Navigator 物体为圆心。尺寸变化会触发重新规划。
 
 ## 命令与只读结果
 
@@ -51,7 +51,7 @@
 
 ## 自定义移动系统接入
 
-导航默认执行顺序 -100。在其后读取建议，用 `min(speed * deltaTime, RemainingWaypointDistance)` 限制位移；执行前检查 `IsMovementClear` 以及实际身体碰撞。不要另存路径索引、目标重算时钟或第二份权威路径。
+导航默认执行顺序 -100。在其后读取建议，用 `min(speed * deltaTime, RemainingWaypointDistance)` 限制位移；执行前检查 `IsMovementClear` 以及实际身体碰撞。使用子刚体时，运动器应读取 `Position`/刚体位置并移动同一身体，不能拿父物体位置计算步长。不要另存路径索引、目标重算时钟或第二份权威路径。
 
 复杂运动、冲刺、击退、跳跃、重力及运动优先级由项目决定。需要自定义推进顺序/障碍域时直接使用 NavigationAgent2D API。
 

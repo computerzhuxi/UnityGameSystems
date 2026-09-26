@@ -49,6 +49,7 @@ namespace Computerzhuxi.Perception2D.Samples
             if (observer == null) return;
             GUILayout.BeginArea(new Rect(15,15,430,320), GUI.skin.box);
             GUILayout.Label("Perception 2D — Sight / Hearing / Memory");
+            GUILayout.Label("Core API example: package Documentation~/GettingStarted.md");
             if (GUILayout.Button("Sight: " + sight)) { sight = !sight; observer.SetSenseEnabled(PerceptionSense.Sight,sight); }
             if (GUILayout.Button("Hearing: " + hearing)) { hearing = !hearing; observer.SetSenseEnabled(PerceptionSense.Hearing,hearing); }
             if (GUILayout.Button("Move target behind wall / restore")) target.transform.position = target.transform.position.y == 0 ? new Vector3(2,3,0) : new Vector3(1,0,0);

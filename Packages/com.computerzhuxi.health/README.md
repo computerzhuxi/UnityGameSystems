@@ -1,63 +1,32 @@
 # Health System
 
-独立整数生命系统，当前稳定版本 1.0.1，已在 Unity 6000.3.21f1 验证。
+独立整数生命系统，目标 Unity 版本为 6000.3。它提供当前生命与上限、伤害、治疗、死亡、复活、上限变化、状态恢复、变化结果和同步事件。
 
-## 它负责什么
-
-- 当前生命和生命上限；
-- 伤害、治疗、死亡和复活；
-- 修改生命上限和恢复完整状态；
-- 不可变变化结果、只读状态和同步事件；
-- 可选的 Unity MonoBehaviour 与 UnityEvent 接入。
-
-它不负责命中、攻击力、防御、无敌、护甲、奖励、UI、动画、音效或具体游戏的存档格式。这些规则应位于消费项目或其适配层。
+包不计算命中、防御、无敌或攻击力，也不拥有游戏的奖励、存档格式、UI 或动画。这些规则由消费项目接入。
 
 ## 安装
 
-在 Unity Package Manager 中使用：
+在 Unity Package Manager 中安装固定的已发布版本示例：
 
     https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.health#health-v1.0.1
 
-私有仓库需要开发机或 CI 具有最小只读权限。凭据不能写入 URL、manifest 或仓库。
+下文提到的组件销毁解绑、Demo 的 `Restore` 按钮和独立 Core 演示属于本地 **Unreleased** 工作树；固定 `health-v1.0.1` 标签不包含这些改动。要体验新增内容，请在本仓库的 HealthLab 使用本地 `file:` 包。私有仓库需要开发机或 CI 配置只读凭据；不要将凭据写入 URL 或 manifest。
 
-## 纯 C# 快速开始
+## 两种入口
 
-    using Computerzhuxi.Health;
+|入口|适用场景|生命状态归属|
+|---|---|---|
+|`HealthComponent`|在 Inspector 配置初值和 UnityEvent，直接给 GameObject 装配|组件创建并持有一个 `Health`|
+|`Health` 与 `IReadOnlyHealth`|现有角色架构自行组合命令、事件和生命周期|调用方创建并持有一个 `Health`|
 
-    Health health = new Health(current: 10, maximum: 10);
-    health.Damage(3);
-    Console.WriteLine(health.Current); // 7
+两者执行相同的 Core 规则。一个角色应选择一个权威生命实例；已有业务门面可以直接组合 Core，无需额外挂 `HealthComponent`。组件禁用与重启不重置生命；组件销毁时解除事件转发。Core 实例的生命周期由持有它的代码管理。
 
-将 IReadOnlyHealth 提供给 UI 等观察者，可以读取状态和监听事件，但不能提交生命命令。
+## 阅读与示例
 
-## Unity 快速开始
-
-给 GameObject 添加 Computerzhuxi.Health.HealthComponent，在 Inspector 配置初值和 UnityEvent：
-
-    HealthComponent health = GetComponent<HealthComponent>();
-    health.Damage(3);
-    health.Heal(2);
-
-组件没有 Update；禁用再启用不会重置运行时状态。序列化初值必须满足 maximum ≥ 1 且 startingHealth 位于 0 到 maximum 之间，即使选择满血启动也一样。
-
-## 选择接入方式
-
-|场景|建议|
-|---|---|
-|简单 Unity 项目|直接挂 HealthComponent|
-|已有角色架构的中型项目|项目适配层调用 Health Core|
-|纯逻辑或非 Unity 测试|直接使用 Health Core|
-
-## 文档
-
-- [文档入口](Documentation~/Index.md)
-- [架构与边界](Documentation~/Architecture.md)
-- [Core 使用指南](Documentation~/CoreGuide.md)
-- [Unity 组件指南](Documentation~/UnityGuide.md)
-- [中型项目集成](Documentation~/IntegrationGuide.md)
+- [从安装到双入口的完整上手](Documentation~/GettingStarted.md)
+- [文档导航](Documentation~/Index.md)
 - [精确 API 契约](Documentation~/API.md)
 - [版本迁移](Documentation~/Migration.md)
-- [常见问题](Documentation~/Troubleshooting.md)
-- [版本记录](CHANGELOG.md)
+- [更新记录](CHANGELOG.md)
 
-导入 Basic Health Demo Sample 后，可运行全部命令并查看 UnityEvent 和序列化示例。
+本地 **Unreleased** Sample 在同一界面中演示组件入口、`Restore` 和独立 Core；HealthLab 保存其镜像用于本地验证。固定 `health-v1.0.1` 的 Sample 仍是旧界面。

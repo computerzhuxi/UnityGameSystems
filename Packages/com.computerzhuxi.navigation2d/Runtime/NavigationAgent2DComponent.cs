@@ -18,13 +18,15 @@ namespace Computerzhuxi.Navigation2D
         [SerializeField, Min(.001f)] private float failureRetryInterval = .25f;
         private NavigationAgent2D agent;
         private PhysicsTraversalSource2D source;
+        private PhysicsScene2D physicsScene;
         /// <summary>返回唯一状态拥有者；首次读取按序列化配置创建。</summary>
         public NavigationAgent2D Agent { get { EnsureInitialized(); return agent; } }
         /// <summary>首次使用时创建运行期对象，不将路径写入序列化资产。</summary>
         private void EnsureInitialized()
         {
             if (agent != null) return;
-            source = new PhysicsTraversalSource2D(gameObject.scene.GetPhysicsScene2D(), obstacleMask, false);
+            physicsScene = gameObject.scene.GetPhysicsScene2D();
+            source = new PhysicsTraversalSource2D(physicsScene, obstacleMask, false);
             agent = new NavigationAgent2D(new GridSettings2D(Vector2.zero, cellSize),
                 new PathOptions2D(radius, maxExpandedNodes, directions),
                 new AgentSettings2D(arrivalDistance, destinationChangeThreshold, repathInterval, failureRetryInterval));
@@ -34,7 +36,16 @@ namespace Computerzhuxi.Navigation2D
         public void Tick(Vector2 position, float deltaTime)
         {
             if (!isActiveAndEnabled) return;
-            EnsureInitialized(); agent.Tick(position, deltaTime, source);
+            EnsureInitialized();
+            PhysicsScene2D currentScene = gameObject.scene.GetPhysicsScene2D();
+            if (physicsScene != currentScene)
+            {
+                // 手动入口仍保留任务；切场景后必须放弃旧路径和旧场景的物理查询源。
+                physicsScene = currentScene;
+                source = new PhysicsTraversalSource2D(currentScene, obstacleMask, false);
+                agent.InvalidatePath();
+            }
+            agent.Tick(position, deltaTime, source);
         }
         /// <summary>配置障碍掩码并重建代理；清除旧任务，不适合逐帧调用。</summary>
         public void ConfigurePhysics(LayerMask mask) { obstacleMask = mask; Reinitialize(); }

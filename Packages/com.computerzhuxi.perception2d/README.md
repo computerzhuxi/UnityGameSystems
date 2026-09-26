@@ -1,23 +1,18 @@
 # Perception 2D
 
-Unity 6000.3 的通用二维视觉、听觉和分感官记忆。当前源码为 **0.2.0 未发布候选**；下面的固定 Git 标签仍指向已发布的 0.1.0，不包含本次重构。
+Unity 6000.3 的二维视觉、听觉与分感官记忆包。包负责目标身份、已确认感知事实、记忆和通知；阵营、威胁评分、AI 决策、导航及音频播放由游戏负责。组件入口与编程式入口共享 `PerceptionCore2D` 状态规则。
 
-## 接入
+当前仓库源码是 **0.2.0 未发布候选**。已发布标签 `perception2d-v0.1.0` 仍是旧 API；不要把安装该标签当成安装本候选。开发时让 Unity Package Manager 通过本地路径引用 `Packages/com.computerzhuxi.perception2d`。待正式发布后再使用相应发布标签。ARPG 当前固定引用 `2d02ccae31639ee669ae1568da0000fada8449f8`，这是候选源码的历史核对信息，不代表正式发布或本轮升级。
 
-通过 Package Manager 的 Add package from git URL 安装：
+## 安装
 
-```text
-https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.perception2d#perception2d-v0.1.0
-```
+在本仓库的 Perception2DLab 中，`Packages/manifest.json` 使用 `"com.computerzhuxi.perception2d": "file:../../../Packages/com.computerzhuxi.perception2d"` 引用候选源码。其他本地工程应按其 `Packages` 目录到包目录的实际相对位置配置 `file:` 路径。若需要已发布的 0.1.0，可在 Package Manager 中添加 `https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.perception2d#perception2d-v0.1.0`；它不包含下述 0.2.0 编程式 API。
 
-本地开发可从本仓库的 package.json 安装。默认组件路径：创建 `PerceptionWorld2D`，给目标添加 `PerceptionTarget2D`，给监听者添加 `PerceptionObserver2D`，用 Inspector 的 world 引用或 `Bind` 装配。同一目标的 Collider 放在身份组件的子层级。观察者自动从所属 Scene 的 `PhysicsScene2D` 扫描；目标和障碍使用同一场景。
+## 两种接入方式
 
-运行时构造观察者时，先停用 GameObject，添加组件并调用 Configure，再启用。运行时 SetFacingDirection 提交世界方向；零向量保留最后有效方向。动态生成目标必须绑定环境。音效播放不自动产生 AI 声音，游戏调用 world.ReportNoise(new NoiseEvent2D(position, source: target))。
+- **组件装配**：创建 `PerceptionWorld2D`，给目标挂 `PerceptionTarget2D` 和 Collider，给观察者挂 `PerceptionObserver2D`；通过 Inspector 的 `world` 字段或 `Bind` 显式绑定。观察者按所属 Scene 的二维物理场景自动扫描，`World.ReportNoise` 路由声音。
+- **编程式组合**：建立共享 `PerceptionTargetRegistry` 与每个观察者独立的 `PerceptionCore2D`；自行提交完整视觉帧、已确认的声音和单调时间。可直接使用 `PhysicsSightScanner2D` 生成视觉帧，也可从其他数据源生成事实；核心无需 GameObject。
 
-纯 API 路径：建立共享 `PerceptionTargetRegistry`，给每个观察者建立独立 `PerceptionCore2D`。调用方提供完整 `SightObservation2D` 帧、已确认的声音和时间，再调用 `Advance`。不需要 GameObject、MonoBehaviour、Transform 或 Physics 查询。也可直接调用 `PhysicsSightScanner2D.Scan` 生成视觉帧。
+从 [GettingStarted](Documentation~/GettingStarted.md) 获取两种方式的完整创建、驱动和释放示例。精确参数与 API 见 [API](Documentation~/API.md)，状态和生命周期规则见 [Contracts](Documentation~/Contracts.md)，版本变化见 [CHANGELOG](CHANGELOG.md)。
 
-`Observations` 是目标列表，每个目标有独立 Sight/Hearing。`HeardEvents` 保存无来源声音。列表为复用的只读视图，若需历史请自行复制值。读取 `IsVisible` 判断持续视觉，不把听觉记忆当成持续发声。
-
-导入 Basic Perception 2D Sample，把 BasicPerceptionDemo 放到空场景并添加正交摄像机，即可用按钮验证视觉、听觉、声音和记忆。正式 Lab 位于 Projects/Perception2DLab。
-
-公共接口见 [API](Documentation~/API.md)，详细行为见 [Contracts](Documentation~/Contracts.md)。包不负责阵营、生命、威胁评分、导航、调查完成或 AI 状态机。
+`Samples~/BasicPerception2D` 是组件交互演示，面板也指向编程式示例。维护者可在 `Projects/Perception2DLab` 打开现成场景；Lab 使用本地包，不维护第二份运行时实现。

@@ -46,7 +46,7 @@
 |DesiredDirection / RemainingWaypointDistance|本帧单位方向和安全路径点距离；执行器自行限幅、碰撞、处理实际速度|
 |LastResult|可空的最近查询结果；尚未查询、停止、域失效或源异常时为空；到达不伪造查询结果|
 |NavigationAgentState2D|Idle / Pending / Following / Arrived / Failed / DomainUnavailable；暂停另用 IsPaused 判断|
-|NavigationAgent2DComponent|只持有单一代理、Inspector 配置与物理源，必须显式 Tick；禁用清零建议，启用失效旧路径|
+|NavigationAgent2DComponent|只持有单一代理、Inspector 配置与物理源，必须显式 Tick；禁用清零建议，启用失效旧路径；跨 PhysicsScene 的下一次 Tick 更换物理源、丢弃路径并保留任务|
 
 到达要求距离在容差内且两端及整段净空通过。旧路径末端与小幅移动的新目的地有偏差时，会继续重算，不永久停住。路径点跳过前验证新连线，重算时只安全跳过首个中心，避免移动目标跟随回头。
 
@@ -73,4 +73,4 @@
 
 ## Inspector 自动导航
 
-NavigationNavigator2D 自动 FixedUpdate，只暴露只读路径/方向建议及导航命令。正式 Runtime 不含实际移动组件，项目自己执行运动。配置生效、停止/暂停、目标失活与净空契约见 [Unity 使用指南](UnityGuide.md)。旧 NavigationAgent2DComponent 仍手动 Tick；纯查询、Agent 与 Avoidance 契约不变。QuickStartExampleMover2D 属于独立 Sample 程序集，不属于正式 API。
+NavigationNavigator2D 自动 FixedUpdate，只暴露只读路径/方向建议及导航命令。身体 Collider2D 有附属刚体时，`Position` 读取该刚体的物理位置，包括位于子物体的独立刚体；无附属刚体时读取 Navigator 的 Transform。保守净空圆与路径推进采用同一锚点。正式 Runtime 不含实际移动组件，项目自己执行运动。配置生效、停止/暂停、目标失活与净空契约见 [Unity 使用指南](UnityGuide.md)。旧 NavigationAgent2DComponent 仍手动 Tick；同一角色不要并行驱动两个组件。纯查询、Agent 与 Avoidance 契约不变。QuickStartExampleMover2D 属于独立 Sample 程序集，不属于正式 API。

@@ -65,9 +65,9 @@ namespace Computerzhuxi.Navigation2D
         public float RemainingWaypointDistance => agent?.RemainingWaypointDistance ?? 0;
         public float EffectiveRadius => applied.Radius;
         public Collider2D BodyCollider => bodyCollider;
-        /// <summary>返回物理身体的真实位置，避免插值显示位置落后一帧影响路径进度。</summary>
+        /// <summary>返回身体刚体的真实位置；没有附属刚体时使用导航物体的位置。</summary>
         public Vector2 Position => bodyCollider != null && bodyCollider.attachedRigidbody != null
-            && bodyCollider.attachedRigidbody.transform == transform ? bodyCollider.attachedRigidbody.position : (Vector2)transform.position;
+            ? bodyCollider.attachedRigidbody.position : (Vector2)transform.position;
         public string ConfigurationError { get; private set; }
         public int QueryCount => agent?.QueryCount ?? 0;
 
@@ -142,11 +142,14 @@ namespace Computerzhuxi.Navigation2D
                     if ((obstacleMask.value & (1 << bodyCollider.gameObject.layer)) != 0)
                         throw new ArgumentException("障碍层不能包含身体自身的 Layer。");
                     var bounds = bodyCollider.bounds;
-                    // 使用以导航位置为圆心的包围圆；偏移/非圆身体保守处理，不假设配置半径足够大。
-                    Vector2 offset = (Vector2)bounds.center - (Vector2)transform.position;
+                    // 用同一身体锚点计算保守圆；常见中心对称形状以局部偏移求中心，避免插值时混用物理/视觉位置。
+                    Transform anchor = bodyCollider.attachedRigidbody != null ? bodyCollider.attachedRigidbody.transform : transform;
+                    Vector2 center = bodyCollider is CircleCollider2D || bodyCollider is BoxCollider2D || bodyCollider is CapsuleCollider2D
+                        ? bodyCollider.transform.TransformPoint(bodyCollider.offset) : bounds.center;
+                    Vector2 offset = center - (Vector2)anchor.position;
                     extent = (new Vector2(Mathf.Abs(offset.x), Mathf.Abs(offset.y)) + (Vector2)bounds.extents).magnitude;
-                    if (bodyCollider is CircleCollider2D circle && circle.offset == Vector2.zero && bodyCollider.transform == transform)
-                        extent = circle.radius * Mathf.Max(Mathf.Abs(transform.lossyScale.x), Mathf.Abs(transform.lossyScale.y));
+                    if (bodyCollider is CircleCollider2D circle && circle.offset == Vector2.zero && bodyCollider.transform == anchor)
+                        extent = circle.radius * Mathf.Max(Mathf.Abs(anchor.lossyScale.x), Mathf.Abs(anchor.lossyScale.y));
                 }
                 var next = new Settings { Origin = gridOrigin, Cell = cellSize, Radius = extent + clearance,
                     Arrival = arrivalDistance, Threshold = destinationChangeThreshold, Repath = repathInterval,
@@ -177,7 +180,7 @@ namespace Computerzhuxi.Navigation2D
         private void OnDrawGizmosSelected()
         {
             if (!drawPath || agent == null) return;
-            Gizmos.color = Color.cyan; Vector3 previous = transform.position;
+            Gizmos.color = Color.cyan; Vector3 previous = Position;
             for (int i = agent.CurrentPathIndex; i < agent.CurrentPath.Count; i++)
             {
                 Vector3 next = agent.CurrentPath[i]; Gizmos.DrawLine(previous, next);

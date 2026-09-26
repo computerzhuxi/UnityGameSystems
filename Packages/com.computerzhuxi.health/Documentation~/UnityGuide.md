@@ -20,7 +20,7 @@
 
 ## 生命周期
 
-组件在 Awake 中幂等初始化，没有 Update。禁用和重新启用不会创建第二个 Core，也不会重置状态。非法配置抛出 ArgumentOutOfRangeException；修正字段后可以再次 Initialize。
+组件在 Awake 中幂等初始化，没有 Update。禁用和重新启用不会创建第二个 Core，也不会重置状态。销毁时解除其对 Core 的事件转发（本地 Unreleased，固定 `health-v1.0.1` 尚未包含）。非法配置抛出 ArgumentOutOfRangeException；修正字段后可以再次 Initialize。完整的双入口生命周期示例见 [上手指南](GettingStarted.md)。
 
 ## UnityEvent
 

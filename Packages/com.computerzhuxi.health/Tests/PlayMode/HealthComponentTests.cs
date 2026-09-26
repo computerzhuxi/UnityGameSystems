@@ -22,5 +22,29 @@ namespace Computerzhuxi.Health.Tests
             }
             finally { Object.Destroy(host); }
         }
+
+        /// <summary>验证组件销毁后，外部保留的核心状态不会再转发 UnityEvent。</summary>
+        [UnityTest] public IEnumerator DestroyDetachesForwardedEvents()
+        {
+            var host = new GameObject("Health retained state");
+            var component = host.AddComponent<HealthComponent>();
+            // State 是公开只读入口；测试只在此处转换为实际核心类型以模拟外部继续持有它。
+            var retainedCore = component.State as Health;
+            Assert.That(retainedCore, Is.Not.Null);
+            int forwarded = 0;
+            component.OnChanged.AddListener(() => forwarded++);
+            component.OnDamaged.AddListener(() => forwarded++);
+            component.OnHealed.AddListener(() => forwarded++);
+            component.OnDied.AddListener(() => forwarded++);
+            component.OnRevived.AddListener(() => forwarded++);
+            Object.Destroy(host);
+            yield return null;
+            retainedCore.Damage(1);
+            retainedCore.Heal(1);
+            retainedCore.Kill();
+            retainedCore.Revive(5);
+            Assert.That(retainedCore.Current, Is.EqualTo(5));
+            Assert.That(forwarded, Is.Zero);
+        }
     }
 }

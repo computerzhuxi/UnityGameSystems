@@ -67,7 +67,7 @@ namespace Computerzhuxi.Perception2D
         public void SubmitSightFrame(IReadOnlyList<SightObservation2D> frame, double atTime)
             => SubmitSightFrame(frame, atTime, sightSourceGeneration);
 
-        /// <summary>提交带视觉来源代次的完整帧；过期来源的排队帧不会生效。</summary>
+        /// <summary>提交带视觉来源代次的完整帧；提交时已过期的来源不占用时间水位。</summary>
         public void SubmitSightFrame(IReadOnlyList<SightObservation2D> frame, double atTime, ulong sourceGeneration)
         {
             if (frame == null) throw new ArgumentNullException(nameof(frame));
@@ -83,12 +83,12 @@ namespace Computerzhuxi.Perception2D
                 copy[value.Handle] = value;
             }
 
-            // 只有全部目标输入都合法且来源仍有效，才占用这条时间轴的水位。
+            // 已接受的帧即使之后切换来源，也保留单调时间水位；切换只取消其状态作用。
             ValidateInputTime(atTime);
             commands.Enqueue(() => ApplySightFrame(copy, atTime, sourceGeneration));
         }
 
-        /// <summary>结束当前视觉并切换来源代次，保留已获得的记忆。</summary>
+        /// <summary>结束当前视觉并切换来源代次，保留记忆及已接受输入的时间水位。</summary>
         public ulong EndSightSource()
         {
             sightSourceGeneration = checked(sightSourceGeneration + 1);

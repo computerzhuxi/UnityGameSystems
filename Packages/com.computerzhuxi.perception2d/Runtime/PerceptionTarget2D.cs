@@ -38,15 +38,13 @@ namespace Computerzhuxi.Perception2D
             if (world == null || IsRegistered) return;
             Handle = world.Registry.Register(this);
             lastGeneration = Handle.Generation;
-            world.RegisterTarget(this);
         }
         /// <summary>注销当前目标并使所有关联记忆失效。</summary>
         private void Unregister()
         {
-            if (!IsRegistered) return;
-            PerceptionTargetHandle oldHandle = Handle;
-            world.Registry.Unregister(oldHandle);
-            world.UnregisterTarget(this, oldHandle);
+            if (Handle.Id == 0) return;
+            // World 可能先被 Unity 销毁；句柄仍保留其注册表以完成幂等注销。
+            Handle.Registry.Unregister(Handle);
             Handle = default;
         }
     }

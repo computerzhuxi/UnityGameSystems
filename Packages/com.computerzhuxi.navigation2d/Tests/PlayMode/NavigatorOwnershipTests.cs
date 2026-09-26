@@ -60,4 +60,46 @@ public sealed class NavigatorOwnershipTests
         navigator.Pause(); navigator.enabled = false;
         yield return new WaitForFixedUpdate(); Assert.That(body.linearVelocity, Is.EqualTo(Vector2.right));
     }
+    /// <summary>子物体独立刚体移动时以其物理位置推进导航，居中圆的净空半径保持稳定。</summary>
+    [UnityTest] public IEnumerator ChildRigidbody_UsesItsPhysicsPositionAndStableClearance()
+    {
+        var root = new GameObject("Navigation root"); SceneManager.MoveGameObjectToScene(root, scene);
+        var child = new GameObject("Moving body"); child.transform.SetParent(root.transform);
+        var body = child.AddComponent<Rigidbody2D>(); body.bodyType = RigidbodyType2D.Kinematic;
+        body.interpolation = RigidbodyInterpolation2D.Interpolate; body.position = new(2, 0);
+        var shape = child.AddComponent<CircleCollider2D>(); shape.radius = .2f;
+        var navigator = root.AddComponent<NavigationNavigator2D>();
+        typeof(NavigationNavigator2D).GetField("bodyCollider", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(navigator, shape);
+        navigator.SetDestination(new(4, 0));
+        yield return new WaitForFixedUpdate();
+        Assert.That(navigator.Position, Is.EqualTo(body.position));
+        Assert.That(navigator.EffectiveRadius, Is.EqualTo(.22f).Within(.001f));
+        Assert.That(navigator.DesiredDirection.x, Is.GreaterThan(0));
+        body.MovePosition(new(2.5f, 0));
+        yield return new WaitForFixedUpdate();
+        Assert.That(navigator.Position, Is.EqualTo(body.position));
+        Assert.That(navigator.Position.x, Is.GreaterThan(2));
+        Assert.That(navigator.EffectiveRadius, Is.EqualTo(.22f).Within(.001f));
+        Assert.That(root.transform.position, Is.EqualTo(Vector3.zero));
+    }
+    /// <summary>根刚体上的偏移矩形仍使用以导航物理位置为圆心的保守包围圆。</summary>
+    [UnityTest] public IEnumerator RootRigidbody_OffsetColliderKeepsConservativeRadius()
+    {
+        var root = new GameObject("Offset body"); SceneManager.MoveGameObjectToScene(root, scene);
+        var body = root.AddComponent<Rigidbody2D>(); body.bodyType = RigidbodyType2D.Kinematic;
+        body.interpolation = RigidbodyInterpolation2D.Interpolate;
+        var shape = root.AddComponent<BoxCollider2D>(); shape.offset = new(.4f, 0); shape.size = new(.4f, .4f);
+        var navigator = root.AddComponent<NavigationNavigator2D>();
+        typeof(NavigationNavigator2D).GetField("bodyCollider", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(navigator, shape);
+        navigator.SetDestination(Vector2.right * 2);
+        yield return new WaitForFixedUpdate();
+        float expected = new Vector2(.6f, .2f).magnitude + .02f;
+        Assert.That(navigator.Position, Is.EqualTo(body.position));
+        Assert.That(navigator.EffectiveRadius, Is.GreaterThanOrEqualTo(expected - .001f));
+        float originalRadius = navigator.EffectiveRadius;
+        body.MovePosition(Vector2.right * .5f);
+        yield return new WaitForFixedUpdate();
+        Assert.That(navigator.Position, Is.EqualTo(body.position));
+        Assert.That(navigator.EffectiveRadius, Is.EqualTo(originalRadius).Within(.001f));
+    }
 }

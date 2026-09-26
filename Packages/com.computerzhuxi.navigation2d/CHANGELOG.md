@@ -1,5 +1,12 @@
 ﻿# Changelog
 
+## Unreleased
+
+- 手动 Tick 的 `NavigationAgent2DComponent` 跨独立 PhysicsScene 后保留目的地，改用新场景物理源并重新规划。
+- `NavigationNavigator2D` 支持子物体独立刚体作为身体：实际位置、保守净空圆和路径 Gizmo 使用一致锚点；保留原有根刚体与固定偏移身体行为。
+- 补充组件与公开类/接口两种入口的入门、迁移和 Lab 验收说明；Lab 构建只消费已跟踪场景。
+- 本节尚未发布，固定 `navigation2d-v0.2.0` 标签不包含上述修改。
+
 ## 0.2.0 — 2026-09-24
 
 - 新增 Inspector 自动导航 NavigationNavigator2D，提供实时配置、只读路径与停止/暂停命令；正式 Runtime 不执行移动。

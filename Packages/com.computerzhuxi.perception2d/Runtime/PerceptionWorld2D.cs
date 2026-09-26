@@ -8,20 +8,18 @@ namespace Computerzhuxi.Perception2D
     [DisallowMultipleComponent]
     public sealed class PerceptionWorld2D : MonoBehaviour
     {
-        private readonly HashSet<PerceptionTarget2D> targets = new();
         private readonly HashSet<PerceptionObserver2D> observers = new();
         public PerceptionTargetRegistry Registry { get; } = new();
-        /// <summary>登记目标；实际视觉仍通过 Physics2D 获取候选。</summary>
-        internal void RegisterTarget(PerceptionTarget2D target) => targets.Add(target);
-        /// <summary>注销目标并将失效命令投递到全部关联观察者。</summary>
-        internal void UnregisterTarget(PerceptionTarget2D target, PerceptionTargetHandle handle)
-        {
-            targets.Remove(target);
-        }
         /// <summary>登记观察者，包括暂时停用但仍保存记忆的观察者。</summary>
         internal void RegisterObserver(PerceptionObserver2D observer) => observers.Add(observer);
         /// <summary>观察者销毁或更换环境时移除关联。</summary>
         internal void UnregisterObserver(PerceptionObserver2D observer) => observers.Remove(observer);
+        /// <summary>销毁环境时立即失效注册身份，核心在自己的后续批次发布失效通知。</summary>
+        private void OnDestroy()
+        {
+            Registry.InvalidateAll();
+            observers.Clear();
+        }
         /// <summary>上报声音并返回接收人数；主线程使用，零响度不产生事件。</summary>
         public int ReportNoise(NoiseEvent2D noise)
         {

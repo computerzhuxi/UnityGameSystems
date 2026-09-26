@@ -1,16 +1,15 @@
 # Health 文档
 
-## 按目的阅读
-
 |目的|文档|
 |---|---|
-|快速安装和最小示例|[包 README](../README.md)|
-|理解系统为什么分层|[架构与边界](Architecture.md)|
-|直接使用纯 C# 核心|[Core 使用指南](CoreGuide.md)|
-|在 Inspector 中挂组件|[Unity 组件指南](UnityGuide.md)|
+|了解职责、安装与双入口|[包 README](../README.md)|
+|从配置到运行一个完整示例|[上手指南](GettingStarted.md)|
+|理解边界与状态归属|[架构与边界](Architecture.md)|
+|深入使用直接组合入口|[Core 使用指南](CoreGuide.md)|
+|深入使用组件入口|[Unity 组件指南](UnityGuide.md)|
 |接入已有角色架构|[中型项目集成](IntegrationGuide.md)|
-|查询事件顺序和边界行为|[API 契约](API.md)|
-|从旧版本升级|[版本迁移](Migration.md)|
+|查询输入、事件与生命周期契约|[API 契约](API.md)|
+|升级已发布版本|[版本迁移](Migration.md)|
 |排查常见问题|[常见问题](Troubleshooting.md)|
 
-示例位于 Samples~/BasicHealthDemo。包的源码开发和发布流程属于 UnityGameSystems 仓库文档，不随消费项目使用流程展开。
+可导入示例位于 `Samples~/BasicHealthDemo`。本仓库 `Projects/HealthLab` 保存示例镜像用于包的本地验证；从已发布 Git 标签全新导入的验证需另行执行。

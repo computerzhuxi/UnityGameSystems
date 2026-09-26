@@ -44,11 +44,13 @@ namespace Computerzhuxi.Perception2D
         // 弱键保留仍在外部存活的对象池槽位；注销后注册表不再强持有目标。
         private readonly ConditionalWeakTable<object, IdentitySlot> identities = new();
         private ulong nextId;
+        private bool invalidated;
         internal int ActiveCount => entries.Count;
 
         /// <summary>注册一个身份，可选关联外部对象但注册表不读取其状态。</summary>
         public PerceptionTargetHandle Register(object associatedObject = null)
         {
+            if (invalidated) throw new ObjectDisposedException(nameof(PerceptionTargetRegistry), "感知环境已经销毁。");
             if (associatedObject != null && identities.TryGetValue(associatedObject, out IdentitySlot slot))
             {
                 if (entries.ContainsKey(slot.Id)) throw new InvalidOperationException("目标已经注册。");
@@ -84,6 +86,13 @@ namespace Computerzhuxi.Perception2D
             ValidateOwner(handle);
             return entries.TryGetValue(handle.Id, out Entry entry) && entry.Generation == handle.Generation
                 ? entry.AssociatedObject : null;
+        }
+
+        /// <summary>环境销毁时失效所有活动身份；各核心在下一批自行清理旧记忆。</summary>
+        internal void InvalidateAll()
+        {
+            invalidated = true;
+            entries.Clear();
         }
 
         /// <summary>拒绝来自其他注册表或未初始化的句柄。</summary>

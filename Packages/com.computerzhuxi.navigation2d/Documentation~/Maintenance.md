@@ -2,7 +2,7 @@
 
 只修改正式 Packages 源码，不修改 PackageCache。使用仓库 Navigation2DLab；Unity 版本按 Lab 的 ProjectVersion.txt。新增或修改方法遵守中文 XML 文档注释，关键设计分支说明原因。
 
-运行仓库 `Tools/ValidateNavigation2D.ps1`；关闭目标项目编辑器后启动批处理。测试结果必须有非零测试数量、无失败，且保留失败尝试日志。发布前还需独立 Sample、空 Library、ARPG 集成、实际 DLL 图、真实资产恢复与人工观察。
+运行仓库 `Tools/ValidateNavigation2D.ps1`：`-MirrorOnly` 只核对四份 Sample 与 Lab 镜像，`-Platform EditMode|PlayMode -TestFilter <名称>` 运行定向测试，`-Full` 执行完整测试、构建和冒烟。启动 Unity batch 前先确认同一工程没有编辑器占用，不关闭用户编辑器。测试结果必须有非零测试数量、无失败，且保留失败尝试日志。发布前还需独立 Sample、空 Library、ARPG 集成、实际 DLL 图、真实资产恢复与人工观察。
 
 |症状|检查|
 |---|---|
@@ -29,7 +29,7 @@
 - 动态封路短暂停顿：立即停走并等待剩余重算间隔属于设计；需要立刻重新规划的已知地图修改可显式失效。
 - DomainUnavailable：检查项目正式层级和掩码，不要降级成全图无障碍。
 
-人工新增项：Agent Lab 的移动目标、暂停/恢复、重置、障碍开关；ARPG 目标移动时持续追击无抖动，重算节流没有不可接受的迟钝；旧版人工验收不能冒充 0.2.0 确认。
+人工新增项：Agent Lab 的移动目标、暂停/恢复、重置、障碍开关；子刚体身体移动时 Navigator 的路径圆心与实际刚体一致；ARPG 目标移动时持续追击无抖动，重算节流没有不可接受的迟钝。旧版人工验收不能冒充新修改的确认。
 
 ## 群体避让排查
 
@@ -47,3 +47,5 @@
 只挂 NavigationNavigator2D 不移动是正常职责分工：检查运动器是否已安装、Kinematic / Simulated 是否配置、身体是否属于同一刚体、角色层是否误选为障碍。运行期 Inspector 显示错误和 LastResult；BudgetExceeded 不能解释为已证明不可达。配置可直接修改，无需编辑源码。
 
 正式 Runtime 不提供移动组件。导航不走属于职责边界；QuickStart 示例适配器不构成生产契约，实际项目应提供自己的移动系统。
+
+已有 Lab 场景为跟踪资产。验证调用 `Build` 系列方法时只读取已有场景，不生成或覆盖场景，也不改 EditorBuildSettings；首次生成场景须由维护者显式调用对应 `Prepare` 并审查结果。当前仓库的 Unreleased 修复不在固定 `navigation2d-v0.2.0` 标签中。

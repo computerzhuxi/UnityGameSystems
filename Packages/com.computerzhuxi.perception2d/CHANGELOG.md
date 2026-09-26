@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- 已激活 World 收到 Unity `OnDestroy` 时失效全部活动注册身份，核心在后续批次按既有流程清理；目标可在 World 先销毁后安全停用或重新绑定。从未激活的 World 仍需身份所有者显式解绑目标。
+- 明确已接受视觉帧在来源切换后仍保留单调时间水位，补充定向契约与生命周期测试。
+- 增加双入口上手文档，统一 Sample、Lab 与构建流程的职责说明。
+
 ## 0.2.0 — 未发布候选
 
 - 新增 `PerceptionTargetRegistry`、生命周期句柄及普通 C# `PerceptionCore2D`，多个观察者可共享身份并独立持有记忆。

@@ -46,6 +46,23 @@ namespace Computerzhuxi.Perception2D.Tests
             Assert.That(core.Observations, Is.Empty);
         }
 
+        /// <summary>已接受的未来帧切换来源后不改状态，但仍约束时间；提交时陈旧的帧不占水位。</summary>
+        [Test]
+        public void SightSourceSwitch_PreservesAcceptedTimeWatermark()
+        {
+            var registry = new PerceptionTargetRegistry();
+            PerceptionTargetHandle handle = registry.Register();
+            var core = new PerceptionCore2D(registry);
+            ulong oldSource = core.SightSourceGeneration;
+            core.SubmitSightFrame(new[] { new SightObservation2D(handle, Vector2.right, Vector2.zero) }, 100, oldSource);
+            core.EndSightSource();
+            Assert.Throws<ArgumentOutOfRangeException>(() => core.Advance(1));
+            core.Advance(100);
+            Assert.That(core.Observations, Is.Empty);
+            core.SubmitSightFrame(Array.Empty<SightObservation2D>(), 1000, oldSource);
+            Assert.DoesNotThrow(() => core.Advance(101));
+        }
+
         /// <summary>完整重置取消已排队的未来输入及其时间水位。</summary>
         [Test]
         public void Reset_CancelsQueuedFutureInputTime()

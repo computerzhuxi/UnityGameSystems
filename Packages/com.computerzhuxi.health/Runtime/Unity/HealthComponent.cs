@@ -42,6 +42,16 @@ namespace Computerzhuxi.Health
             health.Died += NotifyDied;
             health.Revived += NotifyRevived;
         }
+        /// <summary>销毁组件时解除核心事件转发，避免外部保留的 State 继续调用已销毁组件。</summary>
+        private void OnDestroy()
+        {
+            if (health == null) return;
+            health.Changed -= NotifyChanged;
+            health.Damaged -= NotifyDamaged;
+            health.Healed -= NotifyHealed;
+            health.Died -= NotifyDied;
+            health.Revived -= NotifyRevived;
+        }
         /// <summary>提交最终伤害。</summary>
         public HealthChange Damage(int amount) { Initialize(); return health.Damage(amount); }
         /// <summary>提交治疗。</summary>

@@ -8,7 +8,7 @@
 flowchart LR
     Game[消费项目决策] --> Adapter[项目适配层]
     Adapter --> Agent[可选 NavigationAgent2D]
-    Component[手动 Tick 便利组件] --> Agent
+    Component[手动 Tick 组件] --> Agent
     Navigator[自动 NavigationNavigator2D] --> Agent
     Example[QuickStartExampleMover2D<br/>仅 Sample / Lab] --> Navigator
     Agent --> Query[GridPathfinder2D]
@@ -47,4 +47,4 @@ Sample 唯一正式源码位于 Samples~/BasicNavigation2D、Samples~/AgentNavig
 
 战斗站位、攻击名额、跨层楼梯路线仍属于项目玩法。
 
-自动组件路线：NavigationNavigator2D 唯一持有一个 Agent，路径和进度由 Agent 拥有；正式 Runtime 没有移动执行器。QuickStartExampleMover2D 仅位于独立 Sample 程序集，用于演示消费建议；ARPG 不引入 Navigator 或示例适配器。快速组件不隐含批量避让。详见 [Inspector 指南](UnityGuide.md)。
+自动组件路线：NavigationNavigator2D 唯一持有一个 Agent，路径和进度由 Agent 拥有；身体有附属 Rigidbody2D 时以该刚体物理位置推进，偏移身体的净空圆以相同锚点计算。手动 NavigationAgent2DComponent 也持有一个 Agent，跨物理场景保留任务并重新查询；同一角色不要并行驱动两种组件。正式 Runtime 没有移动执行器。QuickStartExampleMover2D 仅位于独立 Sample 程序集，用于演示消费建议；快速组件不隐含批量避让。详见 [Getting Started](GettingStarted.md) 与 [Inspector 指南](UnityGuide.md)。

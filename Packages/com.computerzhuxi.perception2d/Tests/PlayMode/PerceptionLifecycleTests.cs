@@ -9,6 +9,47 @@ namespace Computerzhuxi.Perception2D.Tests
     /// <summary>通过真实 Unity 帧验证暂停、禁用和重新启用。</summary>
     public sealed class PerceptionLifecycleTests
     {
+        /// <summary>实际启用过的 World 销毁时失效句柄，目标随后停用和重绑仍可安全完成。</summary>
+        [UnityTest] public IEnumerator DestroyedWorld_InvalidatesTargetsAndAllowsRebinding()
+        {
+            var worldObject = new GameObject("OwnedWorldLifecycle");
+            var targetObject = new GameObject("OwnedTargetLifecycle");
+            GameObject replacementObject = null;
+            try
+            {
+                var world = worldObject.AddComponent<PerceptionWorld2D>();
+                var target = targetObject.AddComponent<PerceptionTarget2D>();
+                target.Bind(world);
+                var core = new PerceptionCore2D(world.Registry);
+                PerceptionTargetHandle oldHandle = target.Handle;
+                core.ReportHearing(Vector2.right, Vector2.zero, 1, source: oldHandle);
+                core.Advance(1);
+                Assert.That(core.Observations.Count, Is.EqualTo(1));
+
+                Object.Destroy(worldObject);
+                yield return null;
+                Assert.That(core.Registry.IsValid(oldHandle), Is.False);
+                Assert.Throws<System.ObjectDisposedException>(() => core.Registry.Register());
+                Assert.That(target.IsRegistered, Is.False);
+                core.Advance(2);
+                Assert.That(core.Observations, Is.Empty);
+
+                target.enabled = false;
+                Assert.That(target.Handle.Id, Is.Zero);
+                replacementObject = new GameObject("ReplacementWorldLifecycle");
+                var replacement = replacementObject.AddComponent<PerceptionWorld2D>();
+                target.Bind(replacement);
+                target.enabled = true;
+                Assert.That(target.IsRegistered, Is.True);
+                Assert.That(target.Handle.Equals(oldHandle), Is.False);
+            }
+            finally
+            {
+                if (worldObject != null) Object.Destroy(worldObject);
+                if (targetObject != null) Object.Destroy(targetObject);
+                if (replacementObject != null) Object.Destroy(replacementObject);
+            }
+        }
         /// <summary>大扫描间隔下启停观察者立即重新采样，旧目标只按发现距离判断。</summary>
         [UnityTest] public IEnumerator RestartWithLongInterval_UsesDiscoveryDistance()
         {

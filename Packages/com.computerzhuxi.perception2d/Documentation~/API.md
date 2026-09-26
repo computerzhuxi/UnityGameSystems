@@ -1,6 +1,6 @@
 # Perception 2D API（0.2.0 未发布候选）
 
-运行时程序集与命名空间为 `Computerzhuxi.Perception2D`。所有 API 限 Unity 主线程使用。
+运行时程序集与命名空间为 `Computerzhuxi.Perception2D`。所有 API 限 Unity 主线程使用。完整的创建、驱动与释放流程见 [GettingStarted](GettingStarted.md)。
 
 ## 默认组件
 
@@ -40,9 +40,9 @@ observerB.Advance(gameTime); // 身份共享，记忆不共享
 
 `SubmitSightFrame` 输入**本次来源的完整帧**：未调用表示没有新结论；提交空帧会结束所有当前视觉；非空帧会结束未出现目标。重复句柄只保留最后一项。单个核心只有一个有效视觉来源；调用方要自行合并多个来源。`ReportHearing` 表示已经确认听到，不再判断距离。无源声音不传 `source`；每次有效声音都有 `Heard` 通知，同目标只保留最新听觉记录。所有输入和 `Advance` 使用同一单调、有限时间轴。
 
-`core.Settings` 返回防御性配置副本；修改它不会改变运行中的核心。运行时参数只能经 `core.UpdateSettings` 或组件 `observer.UpdateSettings` 提交。非法输入以及陈旧视觉来源不会占用时间水位。
+`core.Settings` 返回防御性配置副本；修改它不会改变运行中的核心。运行时参数只能经 `core.UpdateSettings` 或组件 `observer.UpdateSettings` 提交。非法输入与**提交时就已陈旧**的视觉来源不占时间水位；已经接受的帧即使随后切换来源，也继续约束单调时间，只有状态作用会被取消。调用方须推进至已接受输入的最大时间，不得因来源切换让时间倒退。
 
-注销调用 `registry.Unregister(target)`；旧句柄在下一批从所有核心失效。外部对象重新注册获得新代次。传入其他注册表的句柄抛出参数异常。重置调用 `ResetForReuse()` 后先推进一个批次，再报告新生命周期输入。
+注销调用 `registry.Unregister(target)`；旧句柄立即无效，各核心在下一批清理记忆并发布 `TargetInvalidated`。曾激活的组件 World 收到 Unity `OnDestroy` 时失效其注册表内全部活动句柄；此注册表不再接受新注册，仍持有旧核心的调用方可继续推进一个批次取得失效通知。目标可绑定到从未激活的 World，但 Unity 不保证给这种 World 发送 `OnDestroy`；销毁前须由身份所有者显式解绑或停用目标。外部对象重新注册获得新代次。传入其他注册表的句柄抛出参数异常。重置调用 `ResetForReuse()` 后先推进一个批次，再报告新生命周期输入。
 
 ## 扫描与运行时切换
 
@@ -73,4 +73,4 @@ observer.SetAutomaticSight(true);
 - 旧组件的 `world`、观察点、配置、朝向和 Gizmo 序列化字段保持不变；常用组件查询和事件继续可用。
 - `PerceptionObserver2D.Bind` 到新 World 仍清理旧环境状态。运行中修改参数改用 `UpdateSettings`；停用时的 `Configure` 仍会重建核心。
 - 新的非组件集成直接使用 `PerceptionTargetRegistry`、`PerceptionCore2D`、完整视觉帧和 `Advance`；不要依赖旧内部 `PerceptionSession2D`。
-- 0.1.0 固定 Git 标签不含这些 API；当前 0.2.0 是本地未发布候选，消费项目须在发布后主动升级版本。
+- 0.1.0 固定 Git 标签不含这些 API；当前 0.2.0 是本地未发布候选。ARPG 当前固定引用候选提交 `2d02ccae31639ee669ae1568da0000fada8449f8`，是历史核对事实，不代表候选已经发布；其他消费项目应按各自 manifest 核实引用。

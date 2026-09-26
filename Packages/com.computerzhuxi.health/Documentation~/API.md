@@ -20,7 +20,7 @@ HealthSnapshot 与 HealthChange 是只读值类型。HealthChange 提供 Reason�
 订阅者抛出的异常向调用方传播，已提交状态不回滚，后续通知可能不执行；订阅者负责处理自身异常。重入保护在 finally 中释放。
 
 HealthComponent Initialize 幂等，Awake 或首次访问时初始化；Inspector 初值无效时不静默修正。
-组件不把运行时状态写回序列化初值。禁用不会使显式命令失效，也不清空订阅。
+组件不把运行时状态写回序列化初值。禁用不会使显式命令失效，也不清空订阅；销毁组件会解除其对 Core 的五个事件转发（本地 Unreleased，固定 `health-v1.0.1` 尚未包含）。外部仍持有 `State` 时，由该持有者管理 Core 引用与自己的订阅。
 UnityEvent 使用 Changed/Damaged/Healed/Died/Revived 对应时序；监听者通过 State 读取事实。
 
 1.x 保持公共契约及事件语义；破坏性改变升级主版本，发布标签不可移动。

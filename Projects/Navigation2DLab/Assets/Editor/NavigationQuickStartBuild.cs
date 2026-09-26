@@ -46,7 +46,7 @@ public static class NavigationQuickStartBuild
     /// <summary>构建真实 Inspector 配置场景，不在运行时生成导航或示例运动组件。</summary>
     public static void Build()
     {
-        Prepare();
+        if (!File.Exists(ScenePath)) throw new FileNotFoundException("QuickStart 场景不存在，请先显式生成并审查资产。", ScenePath);
         string output = Path.GetFullPath("../../Artifacts/Logs/Navigation2D/Build/NavigationQuickStartLab.exe");
         Directory.CreateDirectory(Path.GetDirectoryName(output));
         var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions { scenes = new[] { ScenePath }, locationPathName = output,

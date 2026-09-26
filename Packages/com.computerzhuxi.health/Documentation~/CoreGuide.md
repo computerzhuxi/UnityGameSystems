@@ -27,7 +27,7 @@ maximum 必须至少为 1，current 必须位于 0 到 maximum 之间。构造�
 
     IReadOnlyHealth state = health;
 
-把 state 交给 UI、AI 或表现层。它们可以读取 Current、Maximum、Normalized 和监听事件，但不能调用写命令。
+把 state 交给 UI、AI 或表现层。它们可以读取 Current、Maximum、Normalized 和监听事件，但不能通过接口调用写命令。Core 的创建、引用和订阅清理由持有者管理；与组件入口的完整对照见 [上手指南](GettingStarted.md)。
 
 ## 事件
 
