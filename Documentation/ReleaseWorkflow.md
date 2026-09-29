@@ -2,7 +2,7 @@
 
 ## 版本事实
 
-`package.json` 写当前源码版本，`CHANGELOG.md` 写变化；这两者本身不证明该版本已发布。已发布状态由不可变 Git 标签、固定提交和该次发布的历史记录证明；消费项目安装状态由自己的 manifest、lock 文件证明。历史入口：[Health](History/Health/README.md)、[Perception 2D](History/Perception2D/README.md)、[Navigation 2D](History/Navigation2D/README.md)。
+`package.json` 写当前源码版本，`CHANGELOG.md` 写变化；这两者本身不证明该版本已发布。已发布状态由不可变 Git 标签、固定提交和该次发布的历史记录证明；消费项目安装状态由自己的 manifest、lock 文件证明。历史入口：[Health](History/Health/README.md)、[Perception 2D](History/Perception2D/README.md)、[Navigation 2D](History/Navigation2D/README.md)、[Stats](History/Stats/README.md)。
 
 契约仍在探索时可以使用 `0.x`，标签同样不可覆盖。兼容修复递增补丁，兼容新功能递增次版本，破坏公共 API、序列化或既有行为需规划主版本和迁移。不要因三包重构而自动统一版本号。
 
