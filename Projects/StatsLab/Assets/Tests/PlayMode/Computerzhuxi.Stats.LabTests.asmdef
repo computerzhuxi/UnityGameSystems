@@ -1,0 +1,6 @@
+{
+  "name": "Computerzhuxi.Stats.LabTests",
+  "references": ["Computerzhuxi.Stats.Core", "Computerzhuxi.Stats.Unity", "Computerzhuxi.Stats.Samples"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "includePlatforms": []
+}

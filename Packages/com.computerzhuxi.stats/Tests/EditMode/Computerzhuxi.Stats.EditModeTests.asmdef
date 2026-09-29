@@ -1,0 +1,6 @@
+{
+  "name": "Computerzhuxi.Stats.EditModeTests",
+  "references": ["Computerzhuxi.Stats.Core", "Computerzhuxi.Stats.Unity"],
+  "optionalUnityReferences": ["TestAssemblies"],
+  "includePlatforms": ["Editor"]
+}

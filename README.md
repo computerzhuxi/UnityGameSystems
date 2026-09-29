@@ -9,6 +9,7 @@
 |Health|生命值、上限、伤害、治疗、死亡与复活|[Health](Packages/com.computerzhuxi.health/README.md)|[HealthLab](Projects/HealthLab/README.md)|
 |Perception 2D|视觉、事件式听觉、记忆与目标生命周期|[Perception 2D](Packages/com.computerzhuxi.perception2d/README.md)|[Perception2DLab](Projects/Perception2DLab/README.md)|
 |Navigation 2D|路径查询、可选代理与局部避让|[Navigation 2D](Packages/com.computerzhuxi.navigation2d/README.md)|[Navigation2DLab](Projects/Navigation2DLab/README.md)|
+|Stats|属性定义、修正计算与业务值绑定|[Stats](Packages/com.computerzhuxi.stats/README.md)|[StatsLab](Projects/StatsLab/README.md)|
 
 每个包的 README 指向 GettingStarted、API 与契约文档。GettingStarted 分别说明组件式装配和通过公开类/接口自行组合驱动；两条路线遵循同一规则和权威状态。`package.json` 表示当前源码版本，已发布固定标签与历史证据见[发布流程](Documentation/ReleaseWorkflow.md)及各系统历史索引。消费项目通过自身 manifest 和 lock 文件选择安装版本。
 

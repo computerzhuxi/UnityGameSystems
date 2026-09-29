@@ -1,0 +1,15 @@
+{
+  "name": "com.computerzhuxi.stats",
+  "version": "0.1.0",
+  "displayName": "Stats System",
+  "description": "Domain-bound stats, configurable calculations, and modifier lifecycle.",
+  "unity": "6000.3",
+  "author": { "name": "computerzhuxi" },
+  "samples": [
+    {
+      "displayName": "Basic Stats Demo",
+      "description": "Component and pure C# examples with two independent characters.",
+      "path": "Samples~/BasicStatsDemo"
+    }
+  ]
+}

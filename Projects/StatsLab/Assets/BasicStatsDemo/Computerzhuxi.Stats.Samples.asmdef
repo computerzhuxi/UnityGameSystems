@@ -1,0 +1,4 @@
+{
+  "name": "Computerzhuxi.Stats.Samples",
+  "references": ["Computerzhuxi.Stats.Core", "Computerzhuxi.Stats.Unity"]
+}

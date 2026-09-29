@@ -1,0 +1,6 @@
+{
+  "name": "Computerzhuxi.Stats.Unity",
+  "rootNamespace": "Computerzhuxi.Stats",
+  "references": ["Computerzhuxi.Stats.Core"],
+  "noEngineReferences": false
+}
