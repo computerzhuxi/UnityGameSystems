@@ -1,236 +1,148 @@
-# ❤️ Health
+# Health System
 
-一个轻量、独立且可复用的 Unity 生命系统。
+Health System 是一个面向 Unity 的独立整数生命值系统。
 
-支持生命值与最大生命值管理、伤害与治疗、死亡与复活，以及状态恢复。**Health** 只负责管理生命状态，不负责伤害计算、防御抗性、UI、动画或具体的存档格式。
+它提供生命状态、伤害、治疗、死亡、复活、生命上限修改、状态恢复以及同步事件，并将纯 C# Core 与 Unity `MonoBehaviour` 接入层完全分离。
 
-## 📦 安装
+你可以直接将 `Health` 组合进自己的角色架构中，也可以使用 `HealthComponent` 在 Inspector 中配置并通过 `UnityEvent` 接入场景逻辑。
 
-要求 **Unity 6000.3** 或更高版本。
+---
 
-通过 Unity Package Manager 使用 Git URL 添加：
+## ✨ 功能特性
 
-```text
-https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.health#health-v1.0.1
+- **核心状态**：当前生命值与最大生命值管理
+- **基础交互**：伤害与治疗、死亡与显式复活
+- **高级控制**：动态修改最大生命值、完整状态恢复
+- **明确的变化结果**：不可变状态快照、每次命令返回 `HealthChange`
+- **事件驱动**：提供强类型 C# 事件，支持 Inspector 与 `UnityEvent` 接入
+- **架构解耦**：Core 与 Unity 层分离，提供只读观察接口 `IReadOnlyHealth`
+
+### ⛔ 系统边界
+Health System **不负责**以下内容：
+- 攻击力计算 / 命中判定 / 防御与减伤 / 无敌状态 / Buff 与 Debuff
+- 动画 / UI表现 / 奖励结算 / 存档格式 / 网络协议
+> **说明**：保持职责单一，上述逻辑应由上层游戏系统（如战斗系统）负责。
+
+---
+
+## ⚙️ 环境要求
+
+- Unity **6000.3** 或更高版本
+
+---
+
+## 📦 安装指南
+
+通过 Unity Package Manager 使用 Git URL 进行安装：
+
+```bash
+https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.health
 ```
+
+如果项目需要固定版本，建议在末尾追加明确的 tag 或 commit：
+
+```bash
+https://github.com/computerzhuxi/UnityGameSystems.git?path=/Packages/com.computerzhuxi.health#<tag-or-commit>
+```
+
+---
 
 ## 🚀 快速开始
 
-同一个角色应该只有一个权威的生命状态。
+Health System 提供两种接入方式，请根据你的项目架构进行选择：
 
-根据项目结构选择一种使用方式：
+### 方式一：使用 `HealthComponent`（推荐快速原型 / 简单架构）
+**适用场景**：希望直接通过 Inspector 配置生命值、需要 `UnityEvent` 挂载场景逻辑、直接挂载到 GameObject。
+> **注**：组件在运行时会自动创建并持有一个内部的 `Health` 实例。
 
-| 方式 | 适用场景 |
-| --- | --- |
-| **HealthComponent** | 希望通过 Inspector 配置和绑定事件的普通 Unity 对象 |
-| **Health** | 已有自己的角色或状态架构，希望自行管理生命周期 |
-
-### 使用 HealthComponent
-
-在目标 GameObject 上添加 `HealthComponent`。首次尝试时，将 `Maximum` 和 `Starting Health` 都设为 `100`，保持 `Start With Full Health` 勾选。
-
-将下面代码保存为 `Player.cs`，把 `Player` 挂到同一个 GameObject，再将该对象上的 `HealthComponent` 拖入 Player 的 `Health` 引用栏。
+1. 给 GameObject 添加 `HealthComponent`。
+2. 通过代码提交生命命令：
 
 ```csharp
 using Computerzhuxi.Health;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public sealed class Enemy : MonoBehaviour
 {
-    [SerializeField] private HealthComponent health;
+    [SerializeField]
+    private HealthComponent health;
 
-    /// <summary>将最终伤害交给生命组件处理。</summary>
-    public void TakeDamage(int damage)
-    {
-        health.Damage(damage);
-    }
-
-    /// <summary>将治疗量交给生命组件处理。</summary>
-    public void Heal(int amount)
-    {
-        health.Heal(amount);
-    }
-
-    /// <summary>在 Play 模式的组件菜单中触发一次伤害，并输出结果。</summary>
-    [ContextMenu("Demo/Take Damage 20")]
-    private void DemoTakeDamage()
-    {
-        // 编辑模式不执行生命命令，避免把演示操作当作配置修改。
-        if (!Application.isPlaying) return;
-        TakeDamage(20);
-        Debug.Log($"HP: {health.State.Current} / {health.State.Maximum}");
-    }
-}
-```
-
-进入 Play 模式，在 Inspector 中右键点击 `Player` 组件标题，选择 **Demo > Take Damage 20**。首次执行后，Console 应显示 `HP: 80 / 100`。
-
-读取当前状态：
-
-```csharp
-int current = health.State.Current;
-int maximum = health.State.Maximum;
-
-bool alive = health.State.IsAlive;
-bool dead = health.State.IsDead;
-
-float normalized = health.State.Normalized;
-```
-
-### 直接使用 Health
-
-如果项目已经有自己的角色或状态架构，可以直接创建 `Health`。
-
-这种方式不依赖 `MonoBehaviour`，由创建者负责保存实例并管理其生命周期。
-
-```csharp
-using Computerzhuxi.Health;
-
-public class CharacterHealth
-{
-    private readonly Health health =
-        new Health(current: 100, maximum: 100);
-
-    public IReadOnlyHealth State => health;
-
-    /// <summary>提交角色受到的最终伤害。</summary>
     public void TakeDamage(int amount)
     {
         health.Damage(amount);
     }
-
-    /// <summary>恢复存活角色的生命。</summary>
-    public void Heal(int amount)
-    {
-        health.Heal(amount);
-    }
 }
 ```
 
-## 🎮 常用操作
-
-### 伤害与治疗
-
+**常用读取与复活操作：**
 ```csharp
-health.Damage(20);
-health.Heal(20);
+// 读取状态
+Debug.Log(health.State.Current);
+Debug.Log(health.State.Maximum);
+Debug.Log(health.State.IsAlive);
+
+// 复活死亡对象
+health.Revive(health.State.Maximum);
 ```
 
-- `Damage` 最低将生命降至 `0`，死亡后不会继续受到伤害。
-- `Heal` 不会超过最大生命值，也不能复活死亡对象。
-
-### 死亡与复活
-
-```csharp
-health.Kill();
-health.Revive(50);
-```
-
-`Revive` 的生命值必须大于 `0`，且不能超过当前最大生命值。
-
-### 修改最大生命值
-
-保持当前生命值；如果当前值超过新的上限，会截断到新上限：
-
-```csharp
-health.ChangeMaximum(
-    150,
-    MaximumHealthPolicy.PreserveCurrent);
-```
-
-修改上限并回满：
-
-```csharp
-health.ChangeMaximum(
-    150,
-    MaximumHealthPolicy.Refill);
-```
-
-`Refill` 会将当前生命设置为新的最大生命，因此也可以使死亡对象恢复。
-
-### 恢复状态
-
-适合读档或状态同步：
-
-```csharp
-health.Restore(75, 120);
-```
-
-`Restore` 的 `maximum` 必须大于或等于 `1`，`current` 必须处于 `0` 到 `maximum` 之间；非法值会抛出 `ArgumentOutOfRangeException`。它只恢复生命状态，不会重新触发 `Died` 或 `Revived` 事件。
-
-所有生命命令都返回 `HealthChange`，可用结果的 `HasChanged` 判断状态是否实际变化；状态无变化时不派发事件。
-
-## 🔔 监听事件
-
-可以通过 `State` 读取生命状态并监听相关事件。将下面代码保存为 `HealthObserver.cs`，挂到有 `HealthComponent` 的 GameObject 上，并拖入 `Health` 引用：
+### 方式二：直接使用 `Health` Core（推荐纯净架构 / 自定义 Entity）
+**适用场景**：已有自己的角色架构、不希望依赖 `MonoBehaviour`、需要自行管理生命周期和强类型事件。
+> **注**：同一个游戏实体通常只应拥有一个权威生命实例。
 
 ```csharp
 using Computerzhuxi.Health;
-using UnityEngine;
 
-public class HealthObserver : MonoBehaviour
+// 初始化：当前生命值 100，最大生命值 100
+var health = new Health(100, 100);
+
+// 受到伤害
+health.Damage(30);
+
+// 治疗并获取明确的变化结果
+HealthChange result = health.Heal(10);
+Debug.Log($"治疗前: {result.Before.Current}");
+Debug.Log($"治疗后: {result.After.Current}");
+Debug.Log($"实际治疗量: {result.ActualAmount}");
+
+// 订阅状态变化事件
+health.Changed += change =>
 {
-    [SerializeField] private HealthComponent health;
-    private IReadOnlyHealth observed;
-
-    /// <summary>启用观察者时取得组件状态，并开始监听生命变化。</summary>
-    private void OnEnable()
-    {
-        // State 会按需初始化，不依赖两个组件的 Awake 执行顺序。
-        observed = health.State;
-        observed.Changed += OnChanged;
-    }
-
-    /// <summary>禁用或销毁观察者时解除订阅，避免重复监听。</summary>
-    private void OnDisable()
-    {
-        if (observed == null) return;
-        observed.Changed -= OnChanged;
-        observed = null;
-    }
-
-    /// <summary>显示生命变化前后的当前值。</summary>
-    private void OnChanged(HealthChange change)
-    {
-        Debug.Log($"HP: {change.Before.Current} -> {change.After.Current}");
-    }
-}
+    Debug.Log($"生命值变化: {change.Before.Current} -> {change.After.Current}");
+};
 ```
 
-继续执行上面的伤害操作，可看到变化日志。观察者禁用期间不接收通知，重新启用后继续监听；直接使用 `Health` 时，在该实例上订阅事件，并由持有者在观察结束时解除订阅。其他事件包括 `Damaged`、`Healed`、`Died` 和 `Revived`，回调参数同样为 `HealthChange`。
+---
 
-`HealthChange` 提供本次变化的信息：
+## 🧠 核心规则
 
-```csharp
-change.Reason       // 变化原因
-change.Before       // 变化前状态
-change.After        // 变化后状态
-change.Delta        // 当前生命值的实际变化量
-change.ActualAmount // 实际变化量的绝对值
-```
+Health System 遵循一套严格的内部逻辑，确保状态可靠：
 
-使用 `HealthComponent` 时，也可以直接在 Inspector 中绑定：
+1. **数值边界**：
+   - `Maximum >= 1`
+   - `0 <= Current <= Maximum`
+2. **死亡判定**：死亡不是独立保存的状态，由生命值决定。
+   - `Current > 0` ➔ **Alive**
+   - `Current == 0` ➔ **Dead**
+3. **治疗限制**：`Heal` 不会复活死亡对象。
+   - 例：`0 / 100` ➔ `Heal(50)` ➔ 结果仍为 `0 / 100`
+4. **复活机制**：复活必须显式调用（如 `health.Revive(50)`）。
+5. **致死与强制死亡的语义区别**：
+   - **强制死亡**：`Kill()` ➔ 触发 `Changed` ➔ 触发 `Died`（不会被解释为一次伤害）
+   - **致死伤害**：`Damage()` ➔ 触发 `Damaged` ➔ 触发 `Changed` ➔ 触发 `Died`
 
-- `On Changed`
-- `On Damaged`
-- `On Healed`
-- `On Died`
-- `On Revived`
+---
 
-Inspector 中的 UnityEvent 不包含变化参数。如果需要具体数值或变化原因，请监听 `State` 上的事件。
+## 📚 文档与示例
 
-## ⚠️ 使用规则
+### 📖 详细文档
+- [文档首页](Documentation~/index.md) | [快速入门](Documentation~/getting-started.md)
+- [生命模型](Documentation~/concepts/health-model.md) | [命令与事件](Documentation~/concepts/commands-and-events.md)
+- [直接使用 Core](Documentation~/guides/core-usage.md) | [使用 HealthComponent](Documentation~/guides/unity-component.md)
+- [API 参考](Documentation~/reference/api.md) | [故障排查](Documentation~/troubleshooting.md)
+- - [更新记录](CHANGELOG.md)
 
-1. **唯一状态**：同一个角色只保留一个权威 `Health` 实例，避免生命状态分叉。
-2. **复活**：`Heal` 不能复活死亡对象，需要显式调用 `Revive`。
-3. **状态恢复**：`Restore` 用于恢复完整状态，不会重新触发死亡或复活事件。
-4. **组件禁用**：禁用 `HealthComponent` 不会重置其生命状态。
-5. **事件重入**：不要在 Health 事件回调中同步调用 `Damage`、`Heal`、`Kill`、`Revive` 等修改状态的命令，否则会抛出 `InvalidOperationException`。
-
-## 🎮 示例
-
-可以通过 Package Manager 导入 **Basic Health Demo**，查看 `HealthComponent` 的基本使用方式。
-
-## 📝 更新记录
-
-版本变化请查看 [CHANGELOG](./CHANGELOG.md)。
+### 🎮 示例 (Samples)
+可以通过 Package Manager 导入 **Basic Health Demo**。示例涵盖了：
+- `HealthComponent` 与 独立 `Health` 的接入对比
+- Damage / Heal / Kill / Revive / ChangeMaximum / Restore 等完整流转
+- UnityEvent 与 强类型变化事件的使用示范
