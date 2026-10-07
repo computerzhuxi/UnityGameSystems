@@ -4,7 +4,7 @@
 
 选中 Navigator，在 Inspector 修改 Target、Body Collider、Obstacle Mask、Cell Size、预算与重算参数；选中 Quick Start Example Mover 2D 修改 Speed。运行中修改于下个固定帧生效。停止清除目标，点击 Follow target again 才恢复。
 
-仅供示例的 QuickStartExampleMover2D 要求同一刚体的 Kinematic Rigidbody2D；导航组件本身也支持子物体独立刚体，不限制项目运动实现。已有运动器只使用导航组件的只读建议，不挂示例运动器。本示例不自动执行群体 ORCA，批量避让见 Crowd Navigation 2D。
+仅供示例的 QuickStartExampleMover2D 要求同一刚体的 Kinematic Rigidbody2D；本地 Unreleased 的导航组件还支持子物体独立刚体，此项尚未包含在固定 `navigation2d-v0.2.0` 标签中；项目运动实现由项目选择。已有运动器只使用导航组件的只读建议，不挂示例运动器。本示例不自动执行群体 ORCA，批量避让见 Crowd Navigation 2D。
 
 人工检查：绕墙到达、暂停/恢复、停止后保持停止、移动目标、移除/恢复障碍、Inspector 修改速度/净空、Gizmo 剩余路径。自定义身体应使用独立角色层，不能包含在障碍层中。
 

@@ -2,6 +2,8 @@
 
 本页记录 `com.computerzhuxi.stats` 0.1.0 的开发阶段与发布候选验证。范围为独立包、StatsLab、Sample 和验证脚本；未修改 ARPG 或既有 Health 包。版本事实以 `package.json`、不可变标签和发布历史分别核对，消费项目升级另行处理。
 
+表中 `Tools` 脚本命令是当时执行的历史证据，不作为当前操作入口；当前操作入口见 [StatsLab README](README.md)。
+
 ## 自动验证与证据
 
 |行为|命令/入口|本轮证据与结果|
@@ -26,4 +28,4 @@
 
 独立候选工程 `Artifacts/Validation/StatsCandidate-20260929-1510/Project` 引用同目录复制的候选源码包，并从包的 `Samples~/BasicStatsDemo` 导入完整场景、Prefab、定义资产与 meta。`Artifacts/Logs/Stats/candidate-import-20260929-1510/PlayMode.xml` 的真实 Prefab 接入用例 1/1 Passed；`Artifacts/Logs/Stats/candidate-scene-20260929-1515/StatsCandidateSceneAudit.Run.log` 包含 `STATS_CANDIDATE_SCENE_PASS`，验证场景可打开且脚本、绑定、三份定义资产无缺失。包内 28 个 meta GUID 均唯一，Sample 序列化 GUID 无未解析引用，Runtime/Tests/Sample 文件均有 meta；包内无预编译 DLL，也没有 ARPG 业务引用。最终仅调整包 README 的版本安装说明与包外链接，未改变已验证的代码或资源；独立候选复制包与源包 52 个文件哈希一致。
 
-本页不替代推送后的远端固定标签复验和 `Documentation/History/Stats/0.1.0` 发布记录；这些步骤依发布流程单独记录。未升级 ARPG 或其他消费项目。
+本页不替代推送后的远端固定标签复验；当时的发布记录已从当前文档目录移除，可在对应版本的 Git 历史中查阅。这些步骤依发布流程单独记录。未升级 ARPG 或其他消费项目。

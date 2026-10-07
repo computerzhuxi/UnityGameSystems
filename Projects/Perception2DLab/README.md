@@ -13,18 +13,20 @@ Perception 2D 的独立开发与验证工程，通过本地 UPM 路径引用仓�
 
 若检查 Gizmo，在 Hierarchy 中选中运行时创建的 Observer，在 Inspector 勾选 `Show Debug Gizmos`，并打开 Scene 视图的 Gizmos 开关。应看到青色发现距离、黄色丢失距离、绿色听觉范围；目标失去视觉后，其最后成功视觉位置以紫色标记。
 
-面板展示组件入口；编程式 `PerceptionTargetRegistry`、`PerceptionCore2D`、`PhysicsSightScanner2D` 的创建、驱动、释放及事件责任见 [包上手指南](../../Packages/com.computerzhuxi.perception2d/Documentation~/GettingStarted.md)。两条入口共享核心规则。
+面板展示组件入口；编程式 `PerceptionTargetRegistry`、`PerceptionCore2D`、`PhysicsSightScanner2D` 的创建、驱动、释放及事件责任见 [包 README](../../Packages/com.computerzhuxi.perception2d/README.md)。两条入口共享核心规则。
 
-## 验证命令
+## 验证入口
 
-在仓库根目录使用 `Tools/ValidatePerception2D.ps1`：
+打开本 Lab，通过 **Window > General > Test Runner** 选择 EditMode 或 PlayMode，按本次修改范围选择测试。例如核心规则的定向入口为 EditMode 中的 `Computerzhuxi.Perception2D.Tests.PerceptionCoreTests`；生命周期和物理扫描需选择相应 PlayMode 测试。发布候选再运行两种模式的包测试，导出本轮 XML，并按[测试规范](../../Documentation/TestingStandard.md)核对具体用例、数量和结果。
+
+需要 Windows 构建时使用现有 `PerceptionLabBuild.Build`。例如在仓库根目录，确认本工程未被其他 Unity 实例占用后运行：
 
 ```powershell
-./Tools/ValidatePerception2D.ps1 -MirrorOnly
-./Tools/ValidatePerception2D.ps1 -UnityEditor <Unity.exe绝对路径> -Platform EditMode -TestFilter 'Computerzhuxi.Perception2D.Tests.PerceptionCoreTests'
-./Tools/ValidatePerception2D.ps1 -UnityEditor <Unity.exe绝对路径> -Full
+& 'D:/Unity/Editor/6000.3.21f1/Editor/Unity.exe' -batchmode -quit -projectPath 'Projects/Perception2DLab' -executeMethod PerceptionLabBuild.Build -logFile 'Artifacts/Perception2DLab-build.log'
 ```
 
-`-MirrorOnly` 只核对 Sample 与 Lab 的演示脚本及 asmdef 镜像；`-Platform` 与 `-TestFilter` 做定向测试；`-Full` 执行 EditMode、PlayMode、现有场景 Windows 构建和独立程序 smoke。运行前确认同一 Lab 工程未被其他 Unity 实例占用。每次验证的日志及结果写入仓库根目录 `Artifacts/Logs/Perception2D/<运行目录>`；Windows 构建产物单独写入 `Artifacts/Perception2D/Build`。这些目录均不应提交，Lab 的 `Library`、`Temp`、`Logs` 和生成项目文件也不应提交。构建器只读取现有 `Assets/PerceptionDemo.unity`，不自动创建场景或改写 EditorBuildSettings。
+运行前先创建日志目录 `Artifacts`。构建产物为 `Artifacts/Perception2D/Build/Perception2DLab.exe`；用 `--perception-smoke` 启动后，应退出为 0 且日志包含 `PERCEPTION_SMOKE_PASS`。构建器只读取现有 `Assets/PerceptionDemo.unity`，不自动创建场景或改写 EditorBuildSettings。测试、构建和独立程序冒烟分别执行，不能替代上面的人工查看。
 
-包内 `Samples~/BasicPerception2D/BasicPerceptionDemo.cs` 与 Lab 镜像字节一致；修改任一份时须同步并运行 `-MirrorOnly`。正式运行时实现只位于包的 `Runtime`，Lab 不维护第二份感知实现。
+日志、XML 和构建产物放在被 Git 忽略的 `Artifacts`；这些目录及 Lab 的 `Library`、`Temp`、`Logs`、生成项目文件不应提交。
+
+包内 `Samples~/BasicPerception2D/BasicPerceptionDemo.cs` 与 Lab `Assets/BasicPerception2D/BasicPerceptionDemo.cs` 是镜像，修改时须同步。使用 `Get-FileHash -Algorithm SHA256` 比较两份脚本和 `Computerzhuxi.Perception2D.Sample.asmdef`，哈希应分别一致。正式运行时实现只位于包的 `Runtime`，Lab 不维护第二份感知实现。

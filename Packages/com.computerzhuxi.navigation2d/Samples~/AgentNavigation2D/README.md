@@ -7,4 +7,4 @@
 按钮：Reset 重启任务；Moving target 开关目标移动；Pause / Resume 冻结与恢复；Toggle obstacle 修改障碍并显式失效路径。
 黄色 Gizmo 应绕过灰墙；青色角色追随移动目标时不应反复后退。暂停期间位置及 QueryCount 不变。
 
-手动组件跨独立 PhysicsScene 后在下一次 Tick 改用新物理源、丢弃旧路径并保留任务。默认自动 Inspector 入口见 Quick Start；直接查询见 Basic。不要在同一角色上并行驱动本组件与 Navigator，也不要并行维护两个运动执行器。
+本地 Unreleased 修复使手动组件跨独立 PhysicsScene 后在下一次 Tick 改用新物理源、丢弃旧路径并保留任务；固定 `navigation2d-v0.2.0` 标签尚不包含此修复。默认自动 Inspector 入口见 Quick Start；直接查询见 Basic。不要在同一角色上并行驱动本组件与 Navigator，也不要并行维护两个运动执行器。

@@ -1,10 +1,12 @@
 # Basic Health Demo
 
-> [上手指南](../../Documentation~/GettingStarted.md) · [文档导航](../../Documentation~/Index.md)
+> [安装与使用指南](../../README.md)
 
 以下按钮与流程对应本地 **Unreleased** Sample。固定 `health-v1.0.1` 标签不包含新增的组件 `Restore` 按钮、独立 Core 演示和销毁解绑；通过该标签导入时应以标签自身的示例为准。
 
 通过 Package Manager 导入 Sample 后打开 `BasicHealthDemo.unity`。上半部分的组件按钮依次支持 Damage、Heal、Kill、Revive、Change Maximum（保持或回满）和 `Restore 5 / 10`。下半部分是另一个独立的 `Health(6, 8)`：`Core Damage 2` 和 `Core Restore 6 / 8` 展示直接组合及强类型变化事件。两个区域各有自己的状态和事件显示，不代表同一角色需要两份生命值。
+
+接入代码在同目录的 `BasicHealthDemo.cs`：`DrawComponentDemo` 展示通过序列化的 `target` 调用 `HealthComponent`；`Awake` 创建并订阅独立 `Health`，`DrawCoreDemo` 展示直接调用，`OnDestroy` 解除订阅。`RecordUnityEvent` 是场景和 Prefab 的 Inspector 事件入口，`RecordCoreEvent` 是强类型事件入口。界面由 `OnGUI` 绘制；构建冒烟集中在 `RunSmokeCheck`，日常接入可参考对应入口的调用。
 
 组件初始为 `10 / 10 Alive`。依次点击 `Damage 3`、`Heal 3`、`Kill`、`Revive full`、输入默认上限 15 后点击 `Change Maximum / Preserve`、`Change Maximum / Refill`、`Restore 5 / 10`，结果依次为 `7/10`、`10/10`、`0/10 Dead`、`10/10 Alive`、`10/15`、`15/15`、`5/10`。每次实际变化让 `UnityEvent #` 加一；`OnChanged` 在 Scene 和 `HealthDemo.prefab` 中持久化绑定到 `RecordUnityEvent`。独立 Core 从 `6/8` 经 Damage 2 到 `4/8`，经 Restore 回到 `6/8`，其事件显示 `Reason` 与最终快照。
 

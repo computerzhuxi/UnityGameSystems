@@ -2,20 +2,21 @@
 
 ## Unreleased
 
-- 组件销毁时解除五个 Core 事件转发，避免外部保留状态后继续调用已销毁组件。
-- Basic Health Demo 增加 Restore 与独立 Core 编程式入口展示。
-- HealthLab 构建只读取已有场景，并检查 Sample 镜像内容与 GUID。
-- 整理双入口上手、生命周期和 Lab 验收说明。
+- 修复 `HealthComponent` 销毁后仍可能转发 Core 事件的问题。
+- **Basic Health Demo** 增加 `Restore` 和纯代码 `Health` 使用示例。
+- 补全 README 的首次组件接入和事件订阅示例，修正 Core 的 `Restore` 调用示例及降低上限时的说明。
+- 整理 **Basic Health Demo** 的组件、独立 Core 与冒烟入口，保留原有演示行为。
 
 ## 1.0.1
 
-- 序列化测试使用独占临时目录和唯一资源路径，仅清理自己创建且 GUID 匹配的资源。
-- 满血启动也完整校验序列化起始生命值，非法配置初始化失败且可修正后重试。
-- 新增资源保护、异常清理及序列化初值边界回归。
+- 加强 `HealthComponent` 初始配置校验。
+- 非法的最大生命值或初始生命值会在初始化时明确报错。
 
 ## 1.0.0
 
-- 独立整数生命核心、不可变命令结果及确定事件顺序。
-- Inspector 生命组件与可选 UnityEvent。
-- 状态恢复、显式复活、上限策略、溢出与重入保护。
-- EditMode/PlayMode 测试、Basic Health Demo 和独立 HealthLab。
+- 提供独立的 `Health` 生命核心。
+- 提供 `HealthComponent` Inspector 组件和 UnityEvent。
+- 支持伤害、治疗、死亡、复活和状态恢复。
+- 支持最大生命值修改策略。
+- 提供生命变化事件和 `HealthChange` 结果。
+- 提供 **Basic Health Demo**。

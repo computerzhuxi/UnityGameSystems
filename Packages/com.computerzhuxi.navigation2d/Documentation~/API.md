@@ -1,4 +1,6 @@
-﻿# API 契约
+# API 契约
+
+本页记录较细的查询、Agent 与避让边界；安装、Inspector 装配和日常命令先看 [README](../README.md)。包当前版本为 0.2.0；跨独立 PhysicsScene 的组件修复和子刚体身体支持属于本地 Unreleased，尚未包含在 `navigation2d-v0.2.0` 标签中。
 
 命名空间 `Computerzhuxi.Navigation2D`，程序集 `Computerzhuxi.Navigation2D`。Runtime 没有友元程序集。
 
@@ -46,7 +48,7 @@
 |DesiredDirection / RemainingWaypointDistance|本帧单位方向和安全路径点距离；执行器自行限幅、碰撞、处理实际速度|
 |LastResult|可空的最近查询结果；尚未查询、停止、域失效或源异常时为空；到达不伪造查询结果|
 |NavigationAgentState2D|Idle / Pending / Following / Arrived / Failed / DomainUnavailable；暂停另用 IsPaused 判断|
-|NavigationAgent2DComponent|只持有单一代理、Inspector 配置与物理源，必须显式 Tick；禁用清零建议，启用失效旧路径；跨 PhysicsScene 的下一次 Tick 更换物理源、丢弃路径并保留任务|
+|NavigationAgent2DComponent|只持有单一代理、Inspector 配置与物理源，必须显式 Tick；禁用清零建议，启用失效旧路径；本地 Unreleased：跨 PhysicsScene 的下一次 Tick 更换物理源、丢弃路径并保留任务|
 
 到达要求距离在容差内且两端及整段净空通过。旧路径末端与小幅移动的新目的地有偏差时，会继续重算，不永久停住。路径点跳过前验证新连线，重算时只安全跳过首个中心，避免移动目标跟随回头。
 
@@ -63,7 +65,7 @@
 - `AvoidanceAgent2D`：Id、Group、Position、实际 Velocity、PreferredVelocity、Radius、MaxSpeed、Locked。不同 Group 完全隔离，Group 的地图/空间含义由消费者决定。Locked 原样输出实际速度，不承担互惠修正；其邻居承担全责。停止、动作控制和冻结身体应显式锁定。
 - `AvoidanceResult2D`：Id、Velocity、TruncatedNeighbors、Infeasible。Velocity 是建议，不是强制安全保证。预算截断或保留约束不可行时调用方决定停步等降级；锁定对象本身不执行求解。
 - 邻域按圆心距离，最多保留最近的 maxNeighbors；距离相同按稳定 Id。X 索引共享，但插入排序和密集扫描最坏仍是 O(N²)，不是毫秒截止预算。maxNeighbors 可为零，此时遇到邻居会明确报告截断。
-- 坐标与速度分量、半径、最大速度绝对值上限 1,000,000；步长范围 [0.0001, 10000] 秒，时间范围同样限制，邻域距离不得超过 1,000,000。超大有限输入抛 ArithmeticException，非有限或负参数按参数异常拒绝。半径须为正。
+- 坐标与速度分量、半径、最大速度绝对值上限 1,000,000；步长范围 [0.0001, 10000] 秒，时间范围同样限制，邻域距离须为正且不得超过 1,000,000。`Solve` 中超出支持范围的有限输入抛 ArithmeticException，非有限或负参数按参数异常拒绝。半径须为正。构造配置无效时抛 ArgumentOutOfRangeException：maxAgents 须为正，maxNeighbors 范围为 [0, maxAgents]，passingBias 范围为 [0, 1]。
 - passingBias 在前方通道存在邻居时轻微偏向右侧，再执行 ORCA 约束；它帮助对称破局，不代表保证无死锁，也可能受同向前方邻居触发。
 - 求解器不调用 Physics2D，不管理对象/位置/路径。执行方必须对建议位移做环境扫掠，并在下一步提供真实执行速度。物理阻挡、运动裁剪、初始重叠、邻居截断都会破坏理想互惠前提。
 
@@ -73,4 +75,4 @@
 
 ## Inspector 自动导航
 
-NavigationNavigator2D 自动 FixedUpdate，只暴露只读路径/方向建议及导航命令。身体 Collider2D 有附属刚体时，`Position` 读取该刚体的物理位置，包括位于子物体的独立刚体；无附属刚体时读取 Navigator 的 Transform。保守净空圆与路径推进采用同一锚点。正式 Runtime 不含实际移动组件，项目自己执行运动。配置生效、停止/暂停、目标失活与净空契约见 [Unity 使用指南](UnityGuide.md)。旧 NavigationAgent2DComponent 仍手动 Tick；同一角色不要并行驱动两个组件。纯查询、Agent 与 Avoidance 契约不变。QuickStartExampleMover2D 属于独立 Sample 程序集，不属于正式 API。
+`NavigationNavigator2D` 在 `FixedUpdate` 自动推进 Agent，只暴露只读路径、方向建议与导航命令。当前本地工作树中，身体 Collider2D 有附属刚体时，`Position` 读取该刚体的物理位置，包括位于子物体的独立刚体；无附属刚体时读取 Navigator 的 Transform。保守净空圆与路径推进采用同一锚点。子物体独立刚体支持属于 Unreleased。组件配置、停止/暂停、目标失活和运动器接入见 [README](../README.md)。
